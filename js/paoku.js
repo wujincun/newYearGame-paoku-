@@ -144,6 +144,7 @@ var paoku = {
         _this.houseToHouseDistance = h * 50 / 1334;
         _this.houseCurrentX = 0.3;
         _this.endToHouseDistance = h * 320 / 1334;
+        var houseTop ,houseLeft;
         for (var i = 0; i < 8; i++) {
             _this.houseList[i] = {};
             _this.houseList[i].img = new Image();
@@ -151,48 +152,58 @@ var paoku = {
             //左边
             //var leftHouseRight = w * 32 / 750 + _this.houseList[0].renderSize[0];
             if (i == 0) {
+                houseTop = _this.endToHouseDistance;
+                houseLeft = w * 32 / 750;
                 _this.houseList[i].img.src = './img/house1.png';
                 _this.houseList[i].size = [w * 0.59, w * 0.41];//442*307
                 _this.houseList[i].renderSize = [_this.houseList[0].size[0] * 0.6, _this.houseList[0].size[1] * 0.6];
-                _this.houseList[i].position = [w * 32 / 750, _this.endToHouseDistance];//位置水平竖直都变，
+                _this.houseList[i].position = [houseLeft, houseTop];//位置水平竖直都变，
             }
             if (i == 1) {
+                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[0].renderSize[1];
+                //houseLeft =
                 _this.houseList[i].img.src = './img/house3.png';//377*309
                 _this.houseList[i].size = [w * 0.5, w * 0.412];
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0] * 0.8, _this.houseList[1].size[1] * 0.8];
-                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.1,_this.endToHouseDistance +  _this.houseToHouseDistance*i+_this.houseList[i-1].renderSize[1]];//位置水平竖直都变，
+                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.1,houseTop];//位置水平竖直都变，
             }
             if (i == 2) {
+                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[1].renderSize[1];
                 _this.houseList[i].img.src = './img/house1.png';
                 _this.houseList[i].size = [w * 0.59, w * 0.41];//442*307
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0], _this.houseList[2].size[1]];
-                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.2, _this.endToHouseDistance +  _this.houseToHouseDistance*i+_this.houseList[i-1].renderSize[1]+_this.houseList[i-2].renderSize[1]];//位置水平竖直都变，
+                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.2,houseTop];//位置水平竖直都变，
             }
             if (i == 3) {
+                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[2].renderSize[1];
                 _this.houseList[i].img.src = './img/house3.png';//377*309
                 _this.houseList[i].size = [w * 0.5, w * 0.412];
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0] * 1.2, _this.houseList[1].size[1] * 1.2];
-                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.3,_this.endToHouseDistance +  _this.houseToHouseDistance*i+_this.houseList[i-1].renderSize[1]+_this.houseList[i-2].renderSize[1]+_this.houseList[i-3].renderSize[1]];//位置水平竖直都变，
+                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.3,houseTop];//位置水平竖直都变，
             }
             if (i == 4) {
+                houseTop = _this.endToHouseDistance;
                 _this.houseList[i].img.src = './img/house2.png';
                 _this.houseList[i].size = [w * 0.4293, w * 0.412];//322*309
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0]*0.6, _this.houseList[3].size[1]*0.6];
                 _this.houseList[i].position = [w-w * 32 / 750-_this.houseList[0].renderSize[0], h * 320 / 1334];//位置水平竖直都变，
             }
             if (i == 5) {
+                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[4].renderSize[1];
                 _this.houseList[i].img.src = './img/house4.png';
                 _this.houseList[i].size = [w * 0.543, w * 0.421];//407*316
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0]*0.8, _this.houseList[4].size[1]*0.8];
                 _this.houseList[i].position = [w-_this.houseList[i].renderSize[0]*(1-_this.houseList[i].sourceCutX*(i-4)*1.1),_this.endToHouseDistance +  _this.houseToHouseDistance*(i-4)+_this.houseList[i-4-1].renderSize[1]];//位置水平竖直都变，
             }
             if (i == 6) {
+                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[5].renderSize[1];
                 _this.houseList[i].img.src = './img/house2.png';
                 _this.houseList[i].size = [w * 0.4293, w * 0.412];//322*309
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0], _this.houseList[5].size[1]];
                 _this.houseList[i].position = [w-_this.houseList[i].renderSize[0]*(1-_this.houseList[i].sourceCutX*(i-4)*1.2), _this.endToHouseDistance +  _this.houseToHouseDistance*(i-4)+_this.houseList[i-4-1].renderSize[1]+_this.houseList[i-4-2].renderSize[1]];//位置水平竖直都变，
             }
             if (i == 7) {
+                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[6].renderSize[1];
                 _this.houseList[i].img.src = './img/house4.png';
                 _this.houseList[i].size = [w * 0.543, w * 421];//407*316
                 _this.houseList[i].renderSize = [_this.houseList[i].size[0]*1.2, _this.houseList[4].size[1]*1.2];
