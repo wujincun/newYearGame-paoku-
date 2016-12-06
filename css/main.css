@@ -1,0 +1,200 @@
+/*CSS重置*/
+body,
+ul,
+ol,
+li,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fildset,
+table,
+td,
+img,
+div,
+dl,
+dt,
+dd,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+body {
+  font-size: 12px;
+}
+[data-dpr="2"] body,
+ul,
+ol,
+li,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fildset,
+table,
+td,
+img,
+div,
+dl,
+dt,
+dd,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+body {
+  font-size: 24px;
+}
+[data-dpr="3"] body,
+ul,
+ol,
+li,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fildset,
+table,
+td,
+img,
+div,
+dl,
+dt,
+dd,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+body {
+  font-size: 36px;
+}
+img {
+  border: none;
+}
+ul,
+ol {
+  list-style: none;
+}
+input,
+select,
+textarea {
+  outline: none;
+}
+textarea {
+  resize: none;
+}
+a {
+  text-decoration: none;
+}
+/*清浮动*/
+.clearfix:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.clearfix {
+  zoom: 1;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+[data-dpr="2"] div {
+  font-size: 24px;
+}
+[data-dpr="3"] div {
+  font-size: 36px;
+}
+#view_game .topBar {
+  position: absolute;
+  top: 1.1467rem;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 0.2667rem;
+  height: 0.76rem;
+}
+#view_game .topBar .score,
+#view_game .topBar .time {
+  width: 2.5333rem;
+  height: 0.76rem;
+  text-indent: 0.89rem;
+  line-height: 0.76rem;
+}
+#view_game .topBar .score {
+  background: url("../img/score.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .topBar .time {
+  background: url("../img/time.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .countTime {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-box-pack: center;
+  -webkit-box-align: center;
+}
+#view_game .countTime .cutTime {
+  background: url("../img/cutTimeBackground.png") left center no-repeat;
+  background-size: contain;
+  height: 6.227rem;
+  width: 7.373rem;
+}
+#view_game .countTime .cutTime #num {
+  height: 1.35rem;
+  width: 1.04rem;
+  margin: 3.2rem 3rem;
+}
+#view_game .countTime .cutTime .num_1 {
+  background: url("../img/1.png") left center no-repeat;
+  width: 78px;
+  height: 101px;
+  background-size: contain;
+}
+#view_game .countTime .cutTime .num_2 {
+  background: url("../img/2.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .countTime .cutTime .num_3 {
+  background: url("../img/3.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game #jumpHint {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+#view_game #jumpHint .hintArrow {
+  background: url("../img/arrow.png") left center no-repeat;
+  width: 0.95rem;
+  height: 2rem;
+  background-size: contain;
+  margin: 50% auto 0;
+}
