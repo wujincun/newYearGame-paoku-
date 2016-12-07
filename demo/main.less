@@ -1,0 +1,119 @@
+
+/*CSS重置*/
+
+
+body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fildset,table,td,img,div,dl,dt,dd,input{margin:0;padding:0;border:0;box-sizing:border-box}
+img{border:none;}
+ul,ol{ list-style:none;}
+input,select,textarea{outline:none}
+textarea{resize:none;}
+a{ text-decoration:none;}
+
+/*清浮动*/
+.clearfix:after{content:"";display:block;clear:both;}
+.clearfix{zoom:1;}
+.fl{  float: left;  }
+.fr{float: right}
+//内容
+@orange:#ff7200;
+@borderRadius:0.06rem;
+.rebateListContainer{
+  .content{
+    .listItem{
+      padding: 0.2667rem 0.2667rem 0.36rem;
+      border-bottom: 1px solid #ebebeb;
+      a{
+        display: block;
+        font-size: 0;
+        .proPic{
+          width: 35%;
+          height: 2.1333rem;
+          border-radius: @borderRadius;
+          overflow: hidden;
+          img{
+            height: 100%;
+            width: 100%;
+          }
+        }
+        .info{
+          width: 65%;
+          padding-left: 0.2667rem;
+          .infoLine1{
+            font-size: 0.4267rem;
+            height: 0.48rem;
+            span{
+              display: inline-block;
+              line-height: 0.48rem;
+            }
+            .proTitle{
+              color: #000000;
+            }
+            .proPrice{
+              color: #ff4f00;
+            }
+          }
+          .infoLine2{
+            font-size: 0.32rem;
+            color: #626262;
+            height: 1.04rem;
+            span{
+              display: inline-block;
+              margin: 0.3rem 0;
+              height: 0.44rem;
+            }
+            .proDes{
+              width: 70%;
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            }
+            .proCoupon{
+              width: 1.36rem;
+              color: @orange;
+              text-align: center;
+              border: 1px solid @orange;
+              border-radius: @borderRadius;
+            }
+          }
+          .infoLine3{
+            .btn{
+              display: inline-block;
+              width: 1.8rem;
+              line-height: 0.56rem;
+              font-size: 0.32rem;
+              text-align: center;
+              border-radius: @borderRadius;
+            }
+            .shareBtn{
+              color: @orange;
+              border: 1px dashed @orange;
+            }
+            .buyBtn{
+              background-color: @orange;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+  .ruleContent{
+    padding: 0.48rem 0.44rem 1.2rem 0.94rem;
+    .ruleTitle{
+      text-align: center;
+      &:after{
+        width: 2.16rem;
+        border-top: 1px solid #dcdcdc;
+      }
+    }
+    .ruleText{
+      p{
+        text-indent: -0.5rem;
+        color: #797979;
+        font-size: 0.32rem;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
