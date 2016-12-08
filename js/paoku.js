@@ -126,6 +126,7 @@ var paoku = {
         var _this = this;
         var w = _this.w;
         var h = _this.h;
+        _this.blockSize = [w * 0.5,w * 0.5 * 159/ 376];
         _this.blockToBlockDistance = h * 350 / 1334;
         _this.endToBlockDistance = h * 480 / 1334;
         _this.startToEndDistance = h*(1334-370)/1334;
@@ -138,9 +139,9 @@ var paoku = {
             _this.blockList[i] = {};
             _this.blockList[i].img = new Image();
             _this.blockList[i].img.src = './img/block.png';
-            i == 0 && (_this.blockList[0].renderSize = [w * 0.5 * 0.2, w * 0.5 * 159 * 0.2/ 376]);
-            i == 1 && (_this.blockList[1].renderSize = [w * 0.5 * 0.5, w * 0.5 * 159 * 0.5 / 376]);
-            i == 2 && (_this.blockList[2].renderSize = [w * 0.5, w * 0.5 * 159 / 376]);
+            _this.blockList[i].position = [0,blockDistance];//先根据top算尺寸，再根据尺寸算left
+            _this.blockList[i].blockSizeRadio = _this.blockList[i].position[1]*_this.blockSizeRatio*3000/_this.startToEndDistance;
+            _this.blockList[i].renderSize = [_this.blockSize[0]* _this.blockList[i].blockSizeRadio,_this.blockSize[1]* _this.blockList[i].blockSizeRadio];
             _this.blockList[i].position = [(w - _this.blockList[i].renderSize[0]) / 2, blockDistance];
             ctx.drawImage(_this.blockList[i].img, _this.blockList[i].position[0], _this.blockList[i].position[1], _this.blockList[i].renderSize[0], _this.blockList[i].renderSize[1]);
             blockDistance += _this.blockToBlockDistance;
@@ -307,7 +308,6 @@ var paoku = {
         var w = _this.w;
         var h = _this.h;
         var blockDisappearTop = h*370/1334;
-        _this.blockSize = [w * 0.5,w * 0.5 * 159/ 376];
         //位移
         var curTime = Date.now();
         (_this.lastTime > 0) && (_this.blockS = _this.baseBlockSpeed * (curTime - _this.lastTime));
