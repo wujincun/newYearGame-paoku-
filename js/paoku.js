@@ -162,6 +162,8 @@ var paoku = {
         _this.houseDisappearDistance = h * 290 / 1334; //房子消失的位置top
         _this.startToEndHouseDistance = h * (1334 - 290 - 394) / 1334; //最大房顶到最小房顶为650
         _this.leftStartToEndDistance = w * 216 / 750;                     //跑道倾斜角度为72度左右，那么移动的高是宽的3倍，大约为650/3=216；
+       // _this.startToEndHouseDistance = h * 900 / 1334; //最大房顶到最小房顶为650
+       // _this.leftStartToEndDistance = w * 300 / 750;                     //跑道倾斜角度为72度左右，那么移动的高是宽的3倍，大约为650/3=216；
         _this.baseHouseSpeed = _this.startToEndHouseDistance / _this.totalTime;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
         _this.leftBaseHouseSpeed = _this.leftStartToEndDistance / _this.totalTime;//水平方向上的速度
 
@@ -339,13 +341,10 @@ var paoku = {
         for(var i=0;i<4;i++){
             if(_this.houseList[i].position[1] <= _this.houseDisappearDistance){
                 //_this.houseList[i].position[1] = _this.houseDisappearDistance +
-               /* if(i==0) {
-                    _this.houseList[i].position[1] = _this.houseList[3].position[1]  + _this.houseList[3].renderSize[1]* 1.5
-                }else{
-                    _this.houseList[i].position[1] = _this.houseList[i-1].position[1]  + _this.houseList[i-1].renderSize[1]* 1.5
-                }*/
+                _this.houseList[i].position[1] = _this.houseDisappearDistance+_this.houseList[0].renderSize[1]*1.5+_this.houseList[1].renderSize[1]*1.5+_this.houseList[2].renderSize[1]*1.5+_this.houseList[3].renderSize[1]*1.5
+
             }else{
-                _this.houseList[i].position[1] = _this.houseList[i].position[1] - _this.houseS;
+                _this.houseS<=_this.houseList[i].position[1] && (_this.houseList[i].position[1] = _this.houseList[i].position[1] - _this.houseS);
             }
             //if(i<4){
                 _this.houseList[i].position[0] = _this.leftToHouseRightDistance -  _this.houseList[i].radio* _this.leftStartToEndDistance - _this.houseList[i].renderSize[0];//位置水平竖直都变，
@@ -356,7 +355,7 @@ var paoku = {
             _this.houseList[i].houseSizeRadio =  _this.houseList[i].radio * (1 - _this.minHouseSizeM) + _this.minHouseSizeM
             _this.houseList[i].renderSize = [_this.houseList[i].size[0] * _this.houseList[i].houseSizeRadio, _this.houseList[i].size[1] * _this.houseList[i].houseSizeRadio];
 
-            ctx.drawImage(_this.houseList[i].img, 0, 0, _this.houseList[i].size[0], _this.houseList[i].size[1], _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
+            ctx.drawImage(_this.houseList[i].img, _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
     },
     runRunner: function (ctx) {
