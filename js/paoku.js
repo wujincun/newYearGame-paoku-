@@ -12,16 +12,16 @@ var paoku = {
     h: $(window).height(),
 
 
-    animationTimeGap:0,
+    animationTimeGap: 0,
     blockItemTop: 0,
     bgDistance: 0,//背景到start的位置
     runner: {},//人的集合
     houseList: [],
     blockList: [],//障碍物的数组集合
     /*bgSpeed: 4,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
-    //要求速度变化，设置
-    bgMidSpeed: 6,
-    bgFastSpeed: 10,*/
+     //要求速度变化，设置
+     bgMidSpeed: 6,
+     bgFastSpeed: 10,*/
     //可以通过speedFlag来判断是何速度，背景图片切换的时候作为判断边界
     frameCount: 0,//每一帧的计算
     circle: 0,//背景循环次数
@@ -32,9 +32,13 @@ var paoku = {
     score: 0,//分数
     scoreFlag: false,
     blockflag: true,
-    lastTime : 0,
+    lastTime: 0,
 
-    blockS:0,
+    totalTime: 3000,
+    minBlockSizeM: 1 / 3.5,//最小最大比
+    minHouseSizeM: 1 / 3.5,
+    blockS: 0,
+    houseS:0,
 
     init: function () {
         var _this = this;
@@ -126,22 +130,23 @@ var paoku = {
         var _this = this;
         var w = _this.w;
         var h = _this.h;
-        _this.MinBlockSizeM = 1/3.5;
-        _this.blockSize = [w * 0.5,w * 0.5 * 159/ 376];
+        _this.blockSize = [w * 0.5, w * 0.5 * 159 / 376];
         _this.blockToBlockDistance = h * 350 / 1334;
         _this.endToBlockDistance = h * 480 / 1334;
-        _this.startToEndBlockDistance = h*(1334-370-160)/1334;
+        _this.blockDisappearDistance = h * 370 / 1334;
+        _this.startToEndBlockDistance = h * (1334 - 370 - 160) / 1334;
         var blockDistance = _this.endToBlockDistance;
 
-        _this.baseBlockSpeed = _this.startToEndBlockDistance/3000;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
+        _this.baseBlockSpeed = _this.startToEndBlockDistance / _this.totalTime;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
         //初始化的障碍物
         for (var i = 0; i < 3; i++) {
             _this.blockList[i] = {};
             _this.blockList[i].img = new Image();
             _this.blockList[i].img.src = './img/block.png';
-            _this.blockList[i].position = [0,blockDistance];//先根据top算尺寸，再根据尺寸算left
-            _this.blockList[i].blockSizeRadio = ((_this.blockList[i].position[1]-_this.endToBlockDistance)/_this.startToEndBlockDistance)*(1-_this.MinBlockSizeM) +_this.MinBlockSizeM;
-            _this.blockList[i].renderSize = [_this.blockSize[0]* _this.blockList[i].blockSizeRadio,_this.blockSize[1]* _this.blockList[i].blockSizeRadio];
+            _this.blockList[i].position = [0, blockDistance];//先根据top算尺寸，再根据尺寸算left
+            _this.blockList[i].radio = (_this.blockList[i].position[1] - _this.blockDisappearDistance) / _this.startToEndBlockDistance;
+            _this.blockList[i].blockSizeRadio = _this.blockList[i].radio * (1 - _this.minBlockSizeM) + _this.minBlockSizeM;
+            _this.blockList[i].renderSize = [_this.blockSize[0] * _this.blockList[i].blockSizeRadio, _this.blockSize[1] * _this.blockList[i].blockSizeRadio];
             _this.blockList[i].position = [(w - _this.blockList[i].renderSize[0]) / 2, blockDistance];
             ctx.drawImage(_this.blockList[i].img, _this.blockList[i].position[0], _this.blockList[i].position[1], _this.blockList[i].renderSize[0], _this.blockList[i].renderSize[1]);
             blockDistance += _this.blockToBlockDistance;
@@ -151,75 +156,70 @@ var paoku = {
         var _this = this;
         var w = _this.w;
         var h = _this.h;
-        _this.MinHouseSizeM = 1/3.5;
-        _this.houseToHouseDistance = h * 50 / 1334;
-        _this.endToHouseDistance = h * 320 / 1334;
-        _this.startToEndHouseDistance = h * (1334 - 290 - 394)/1334; //最大房顶到最小房顶为650
-        _this.baseHouseSpeed = _this.startToEndHouseDistance/3000;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
-        var houseTop ,houseLeft;
+        var top;
+        _this.endToHouseDistance = h * 300 / 1334; //开始渲染时最小房子在页面上的top
+        _this.leftToHouseRightDistance = w * 320 / 750;//最小房子的右边在页面上的left
+        _this.houseDisappearDistance = h * 290 / 1334; //房子消失的位置top
+        _this.startToEndHouseDistance = h * (1334 - 290 - 394) / 1334; //最大房顶到最小房顶为650
+        _this.leftStartToEndDistance = w * 216 / 750;                     //跑道倾斜角度为72度左右，那么移动的高是宽的3倍，大约为650/3=216；
+        _this.baseHouseSpeed = _this.startToEndHouseDistance / _this.totalTime;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
+        _this.leftBaseHouseSpeed = _this.leftStartToEndDistance / _this.totalTime;//水平方向上的速度
+
+
         for (var i = 0; i < 8; i++) {
             _this.houseList[i] = {};
             _this.houseList[i].img = new Image();
+            _this.houseList[i].position = [];
             //左边
-            //var leftHouseRight = w * 32 / 750 + _this.houseList[0].renderSize[0];
             if (i == 0) {
-                houseTop = _this.endToHouseDistance;
-                houseLeft = w * 32 / 750;
                 _this.houseList[i].img.src = './img/house1.png';
                 _this.houseList[i].size = [w * 0.59, w * 0.41];//442*307
-                _this.houseList[i].renderSize = [_this.houseList[0].size[0] * 0.6, _this.houseList[0].size[1] * 0.6];
-                _this.houseList[i].position = [houseLeft, houseTop];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top = _this.endToHouseDistance;//位置水平竖直都变，
             }
             if (i == 1) {
-                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[0].renderSize[1];
-                //ouseLeft =
                 _this.houseList[i].img.src = './img/house3.png';//377*309
                 _this.houseList[i].size = [w * 0.5, w * 0.412];
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0] * 0.8, _this.houseList[1].size[1] * 0.8];
-                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.1,houseTop];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             if (i == 2) {
-                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[1].renderSize[1];
                 _this.houseList[i].img.src = './img/house1.png';
                 _this.houseList[i].size = [w * 0.59, w * 0.41];//442*307
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0], _this.houseList[2].size[1]];
-                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i*1.2,houseTop];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             if (i == 3) {
-                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[2].renderSize[1];
                 _this.houseList[i].img.src = './img/house3.png';//377*309
                 _this.houseList[i].size = [w * 0.5, w * 0.412];
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0] * 1.5, _this.houseList[1].size[1] * 1.5];
-                _this.houseList[i].position = [-_this.houseList[i].renderSize[0]*_this.houseList[i].sourceCutX*i,houseTop];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             if (i == 4) {
-                houseTop = _this.endToHouseDistance;
                 _this.houseList[i].img.src = './img/house2.png';
                 _this.houseList[i].size = [w * 0.4293, w * 0.412];//322*309
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0]*0.6, _this.houseList[3].size[1]*0.6];
-                _this.houseList[i].position = [w-w * 32 / 750-_this.houseList[0].renderSize[0], h * 320 / 1334];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top =  _this.endToHouseDistance;//位置水平竖直都变，
             }
             if (i == 5) {
-                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[4].renderSize[1];
                 _this.houseList[i].img.src = './img/house4.png';
                 _this.houseList[i].size = [w * 0.543, w * 0.421];//407*316
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0]*0.8, _this.houseList[4].size[1]*0.8];
-                _this.houseList[i].position = [w-_this.houseList[i].renderSize[0]*(1-_this.houseList[i].sourceCutX*(i-4)*1.1),_this.endToHouseDistance +  _this.houseToHouseDistance*(i-4)+_this.houseList[i-4-1].renderSize[1]];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             if (i == 6) {
-                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[5].renderSize[1];
                 _this.houseList[i].img.src = './img/house2.png';
                 _this.houseList[i].size = [w * 0.4293, w * 0.412];//322*309
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0], _this.houseList[5].size[1]];
-                _this.houseList[i].position = [w-_this.houseList[i].renderSize[0]*(1-_this.houseList[i].sourceCutX*(i-4)*1.2), _this.endToHouseDistance +  _this.houseToHouseDistance*(i-4)+_this.houseList[i-4-1].renderSize[1]+_this.houseList[i-4-2].renderSize[1]];//位置水平竖直都变，
+                _this.houseList[i].position[1] = top +=  _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             if (i == 7) {
-                houseTop = houseTop + _this.houseToHouseDistance + _this.houseList[6].renderSize[1];
                 _this.houseList[i].img.src = './img/house4.png';
                 _this.houseList[i].size = [w * 0.543, w * 421];//407*316
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0]*1.2, _this.houseList[4].size[1]*1.2];
-                _this.houseList[i].position = [w-_this.houseList[i].renderSize[0]*(1-_this.houseList[i].sourceCutX*(i-4)*1.3),_this.endToHouseDistance +  _this.houseToHouseDistance*(i-4)+_this.houseList[i-4-1].renderSize[1]+_this.houseList[i-4-2].renderSize[1]+_this.houseList[i-4-3].renderSize[1]];//位置水平竖直都变，
+                _this.houseList[i].position[1] = _this.rightTop +=  _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
+            _this.houseList[i].radio = (_this.houseList[i].position[1] - _this.houseDisappearDistance) / _this.startToEndHouseDistance;
+            _this.houseList[i].houseSizeRadio =  _this.houseList[i].radio * (1 - _this.minHouseSizeM) + _this.minHouseSizeM
+            _this.houseList[i].renderSize = [_this.houseList[i].size[0] * _this.houseList[i].houseSizeRadio, _this.houseList[i].size[1] * _this.houseList[i].houseSizeRadio];
+            if(i<4){
+                _this.houseList[i].position[0] = _this.leftToHouseRightDistance -  _this.houseList[i].radio* _this.leftStartToEndDistance - _this.houseList[i].renderSize[0];//位置水平竖直都变，
+            }else{
+               // _this.houseList[i].position[0] = _this.leftToHouseRightDistance -  _this.houseList[i].radio* _this.leftStartToEndDistance - _this.houseList[i].renderSize[0];//位置水平竖直都变，
+            }
+
             ctx.drawImage(_this.houseList[i].img, 0, 0, _this.houseList[i].size[0], _this.houseList[i].size[1], _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
 
@@ -259,7 +259,7 @@ var paoku = {
                     e.preventDefault();
                     $jumpHint.hide();
 
-                    _this.initTime = _this.initRadioTime =Date.now();
+                    _this.initTime = _this.initRadioTime = Date.now();
                     _this.run(ctx); //跑
                     _this.bind(ctx);
                 });
@@ -271,6 +271,7 @@ var paoku = {
     run: function (ctx) {
         var _this = this;
         var timeGap, seconds;
+
         function animateRun() {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
             //计时
@@ -278,6 +279,13 @@ var paoku = {
             seconds = Math.round(timeGap / 10);
             _this.$time.text(seconds / 100 + 's');
 
+            //位移
+            var curTime = Date.now();
+            if(_this.lastTime > 0){
+                _this.blockS = _this.baseBlockSpeed * (curTime - _this.lastTime);
+                _this.houseS = _this.baseHouseSpeed * (curTime - _this.lastTime)
+            }
+            _this.lastTime = curTime;
             //画
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.changeSpeed();
@@ -289,69 +297,68 @@ var paoku = {
             _this.animationTimeGap = 0;
 
             /*if (_this.flag) {//跳起
-                _this.jumpRunner(ctx);//画每一帧跳起的小人
-                _this.rafId = window.requestAnimationFrame(animateRun);
-            } else {
-                _this.runRunner(ctx);//画每一帧奔跑的小人
-                _this.rafId = window.requestAnimationFrame(animateRun);
-                if (_this.frameCount % 5 == 0) {
-                    if (_this.collisionTest()) {
-                        _this.handleCollision();
-                    }
-                }
-            }*/
+             _this.jumpRunner(ctx);//画每一帧跳起的小人
+             _this.rafId = window.requestAnimationFrame(animateRun);
+             } else {
+             _this.runRunner(ctx);//画每一帧奔跑的小人
+             _this.rafId = window.requestAnimationFrame(animateRun);
+             if (_this.frameCount % 5 == 0) {
+             if (_this.collisionTest()) {
+             _this.handleCollision();
+             }
+             }
+             }*/
             _this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
+
         animateRun();
     },
     runBlock: function (ctx) {
         var _this = this;
         var w = _this.w;
         var h = _this.h;
-        var blockDisappearTop = h*370/1334;
-        //位移
-        var curTime = Date.now();
-        (_this.lastTime > 0) && (_this.blockS = _this.baseBlockSpeed * (curTime - _this.lastTime));
-        _this.lastTime = curTime;
         //每一个
         for (var i = 0; i < _this.blockList.length; i++) {
-            if(_this.blockList[i].position[1] <= blockDisappearTop){
-                _this.blockList[i].renderSize = [w * 0.5*1.5, w * 0.5 * 159*1.5/ 376];
-                _this.blockList[i].position = [(w - _this.blockList[i].renderSize[0]) / 2, blockDisappearTop+_this.blockToBlockDistance*3];
-            }else{
+            if (_this.blockList[i].position[1] <= _this.blockDisappearDistance) {
+                _this.blockList[i].renderSize = [w * 0.5 * 1.5, w * 0.5 * 159 * 1.5 / 376];
+                _this.blockList[i].position = [(w - _this.blockList[i].renderSize[0]) / 2, _this.blockDisappearDistance + _this.blockToBlockDistance * 3];
+            } else {
+                _this.blockList[i].radio = (_this.blockList[i].position[1] - _this.blockDisappearDistance) / _this.startToEndBlockDistance;
+                _this.blockList[i].blockSizeRadio = _this.blockList[i].radio * (1 - _this.minBlockSizeM) + _this.minBlockSizeM;
+                _this.blockList[i].renderSize = [_this.blockSize[0] * _this.blockList[i].blockSizeRadio, _this.blockSize[1] * _this.blockList[i].blockSizeRadio];
                 _this.blockList[i].position = [(w - _this.blockList[i].renderSize[0]) / 2, _this.blockList[i].position[1] - _this.blockS];
-                _this.blockList[i].blockSizeRadio = ((_this.blockList[i].position[1]-_this.endToBlockDistance)/_this.startToEndBlockDistance)*(1-_this.MinBlockSizeM) +_this.MinBlockSizeM;
-                _this.blockList[i].renderSize = [_this.blockSize[0]* _this.blockList[i].blockSizeRadio,_this.blockSize[1]* _this.blockList[i].blockSizeRadio];
             }
             ctx.drawImage(_this.blockList[i].img, _this.blockList[i].position[0], _this.blockList[i].position[1], _this.blockList[i].renderSize[0], _this.blockList[i].renderSize[1]);
         }
     },
-    runHouse: function (ctx) {
+    runHouse:function (ctx) {
         var _this = this;
-        var w=_this.w;
-        var h=_this.h;
-        var houseSizeStep = 0.995;
-        var houseDisappearTop = h*320/1334;
-        var houseHSum;
-        for (var i = 0; i < _this.houseList.length; i++) {
-            //左边
-            if(i<4){
-                if(_this.houseList[i].position[1] <= houseDisappearTop){
-                    _this.houseList[i].renderSize = [_this.houseList[i].size[0]*2.5,_this.houseList[i].size[1]*2.5];
-                    houseHSum = _this.houseList[1].renderSize[1] +_this.houseList[2].renderSize[1]+_this.houseList[2].renderSize[1]+_this.houseList[3].renderSize[1];
-                    _this.houseList[i].position = [-850, houseDisappearTop+houseHSum];
-                }else{
-                    _this.houseList[i].renderSize = [_this.houseList[i].renderSize[0]*houseSizeStep,_this.houseList[i].renderSize[1]*houseSizeStep];
-                    _this.houseList[i].position = [_this.houseList[i].position[0]+3,_this.houseList[i].position[1] - _this.bgSpeed]
-                }
+        var w = _this.w;
+        var h = _this.h;
 
+        for(var i=0;i<4;i++){
+            if(_this.houseList[i].position[1] <= _this.houseDisappearDistance){
+                //_this.houseList[i].position[1] = _this.houseDisappearDistance +
+               /* if(i==0) {
+                    _this.houseList[i].position[1] = _this.houseList[3].position[1]  + _this.houseList[3].renderSize[1]* 1.5
+                }else{
+                    _this.houseList[i].position[1] = _this.houseList[i-1].position[1]  + _this.houseList[i-1].renderSize[1]* 1.5
+                }*/
             }else{
-                _this.houseList[i].position = [_this.houseList[i].position[0]-1.5,_this.houseList[i].position[1] - _this.bgSpeed]
+                _this.houseList[i].position[1] = _this.houseList[i].position[1] - _this.houseS;
             }
+            //if(i<4){
+                _this.houseList[i].position[0] = _this.leftToHouseRightDistance -  _this.houseList[i].radio* _this.leftStartToEndDistance - _this.houseList[i].renderSize[0];//位置水平竖直都变，
+            //}else{
+
+            //}
+            _this.houseList[i].radio = (_this.houseList[i].position[1] - _this.houseDisappearDistance) / _this.startToEndHouseDistance;
+            _this.houseList[i].houseSizeRadio =  _this.houseList[i].radio * (1 - _this.minHouseSizeM) + _this.minHouseSizeM
+            _this.houseList[i].renderSize = [_this.houseList[i].size[0] * _this.houseList[i].houseSizeRadio, _this.houseList[i].size[1] * _this.houseList[i].houseSizeRadio];
 
             ctx.drawImage(_this.houseList[i].img, 0, 0, _this.houseList[i].size[0], _this.houseList[i].size[1], _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
-    },//两侧房子
+    },
     runRunner: function (ctx) {
         var _this = this;
         var blockItem = _this.blockList[0];
