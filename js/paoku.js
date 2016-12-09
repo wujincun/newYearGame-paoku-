@@ -200,7 +200,7 @@ var paoku = {
             }
             if (i == 5) {
                 _this.houseList[i].img.src = './img/house4.png';
-                _this.houseList[i].size = [w * 0.543, w * 0.421];//407*316
+                _this.houseList[i].size = [w * 0.527, w * 0.41];//407*316---395.40822*307
                 _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             if (i == 6) {
@@ -210,7 +210,7 @@ var paoku = {
             }
             if (i == 7) {
                 _this.houseList[i].img.src = './img/house4.png';
-                _this.houseList[i].size = [w * 0.543, w * 0.421];//407*316
+                _this.houseList[i].size = [w * 0.527, w * 0.41];//407*316
                 _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
             }
             _this.houseList[i].radio = (_this.houseList[i].position[1] - _this.houseDisappearDistance) / _this.startToEndHouseDistance;
