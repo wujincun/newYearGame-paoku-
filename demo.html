@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .flip-container {
+            perspective: 1000;
+        }
+        /* flip the pane when hovered */
+        .flip-container:hover .flipper, .flip-container.hover .flipper {
+            transform: rotateY(180deg);
+        }
+
+        .flip-container, .front, .back {
+            width: 320px;
+            height: 480px;
+        }
+
+        /* flip speed goes here */
+        .flipper {
+            transition: 0.6s;
+            transform-style: preserve-3d;
+
+            position: relative;
+        }
+        .front{
+            background: url("16-1.png") left center no-repeat;
+            width: 92px;
+            height: 40px;
+        }
+        .back{
+            background: url("17-1.png") left center no-repeat;
+            width: 92px;
+            height: 40px;
+        }
+        /* hide back of pane during swap */
+        .front, .back {
+            backface-visibility: hidden;
+
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* front pane, placed above back */
+        .front {
+            z-index: 2;
+        }
+
+        /* back, initially hidden pane */
+        .back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
+    <div class="flipper">
+        <div class="front">
+            <!-- 前面内容 -->16
+        </div>
+        <div class="back">
+            <!-- 背面内容 -->17
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -44,25 +44,25 @@ var paoku = {
             var _this = this;
             //加载完图片后render
             var imgs = [
-                './img/1.png',
-                './img/2.png',
-                './img/3.png',
-                './img/background.jpg',
-                './img/bag.png',
-                './img/block.png',
-                './img/btnBackground.png',
-                './img/child.png',
-                './img/close.png',
-                './img/couponClose.png',
-                './img/cutTimeBackground.png',
-                './img/failHeader.png',
-                './img/house1.png',
-                './img/house2.png',
-                './img/house3.png',
-                './img/house4.png',
-                './img/popBackground.png',
-                './img/runner.png',
-                './img/successHeader.png'
+                './img/game/1.png',
+                './img/game/2.png',
+                './img/game/3.png',
+                './img/game/background.jpg',
+                './img/game/bag.png',
+                './img/game/block.png',
+                './img/game/btnBackground.png',
+                './img/game/child.png',
+                './img/game/close.png',
+                './img/game/couponClose.png',
+                './img/game/cutTimeBackground.png',
+                './img/game/failHeader.png',
+                './img/game/house1.png',
+                './img/game/house2.png',
+                './img/game/house3.png',
+                './img/game/house4.png',
+                './img/game/popBackground.png',
+                './img/game/runner.png',
+                './img/game/successHeader.png'
             ];
             var num = imgs.length;
             for (var i = 0; i < num; i++) {
@@ -142,7 +142,7 @@ var paoku = {
             for (var i = 0; i < 3; i++) {
                 _this.blockList[i] = {};
                 _this.blockList[i].img = new Image();
-                _this.blockList[i].img.src = './img/block.png';
+                _this.blockList[i].img.src = './img/game/block.png';
                 _this.blockList[i].position = [0, blockDistance];//先根据top算尺寸，再根据尺寸算left
                 _this.blockList[i].radio = (_this.blockList[i].position[1] - _this.blockDisappearDistance) / _this.startToEndBlockDistance;
                 _this.blockList[i].blockSizeRadio = _this.blockList[i].radio * (1 - _this.minBlockSizeM) + _this.minBlockSizeM;
@@ -174,37 +174,37 @@ var paoku = {
                 _this.houseList[i].position = [];
                 //左边
                 if (i == 0) {
-                    _this.houseList[i].img.src = './img/house1.png';
+                    _this.houseList[i].img.src = './img/game/house1.png';
                     _this.houseList[i].size = [w * 0.59, w * 0.41];//442*307
                     _this.houseList[i].position[1] = top = _this.endToHouseDistance;//位置水平竖直都变，
                 }
                 if (i == 1) {
-                    _this.houseList[i].img.src = './img/house3.png';//377*309
+                    _this.houseList[i].img.src = './img/game/house3.png';//377*309
                     _this.houseList[i].size = [w * 0.5, w * 0.412];
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }
                 if (i == 2) {
-                    _this.houseList[i].img.src = './img/house1.png';
+                    _this.houseList[i].img.src = './img/game/house1.png';
                     _this.houseList[i].size = [w * 0.59, w * 0.41];//442*307
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }
                 if (i == 3) {
-                    _this.houseList[i].img.src = './img/house3.png';//377*309
+                    _this.houseList[i].img.src = './img/game/house3.png';//377*309
                     _this.houseList[i].size = [w * 0.5, w * 0.412];
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }
                 if (i == 4) {
-                    _this.houseList[i].img.src = './img/house2.png';
+                    _this.houseList[i].img.src = './img/game/house2.png';
                     _this.houseList[i].size = [w * 0.4293, w * 0.412];//322*309
                     _this.houseList[i].position[1] = top = _this.endToHouseDistance;//位置水平竖直都变，
                 }
                 if (i == 5) {
-                    _this.houseList[i].img.src = './img/house4.png';
+                    _this.houseList[i].img.src = './img/game/house4.png';
                     _this.houseList[i].size = [w * 0.527, w * 0.41];//407*316---395.40822*307
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }
                 if (i == 6) {
-                    _this.houseList[i].img.src = './img/house2.png';
+                    _this.houseList[i].img.src = './img/game/house2.png';
                     _this.houseList[i].size = [w * 0.4293, w * 0.412];//322*309
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }
@@ -233,7 +233,7 @@ var paoku = {
             var h = this.h;
             //按照图片尺寸设定人物宽高
             _this.runner.img = new Image();
-            _this.runner.img.src = './img/runner.png';
+            _this.runner.img.src = './img/game/runner.png';
             _this.runner.size = [w * 0.22, w * 0.22 * 263 / 165];
             //_this.bigRunnerSize = [_this.runner.size[0] * 1.2,_this.runner.size[1] * 1.2];
 

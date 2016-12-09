@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #div1
+        {
+            position: relative;
+            height: 150px;
+            width: 150px;
+            margin: 50px;
+            padding:10px;
+            border: 1px solid black;
+            perspective:150;
+            -webkit-perspective:150; /* Safari and Chrome */
+        }
+
+        #div2
+        {
+            padding:50px;
+            position: absolute;
+            border: 1px solid black;
+            background-color: yellow;
+            transform: rotateX(45deg);
+            -webkit-transform: rotateX(45deg); /* Safari and Chrome */
+        }
+    </style>
+</head>
+<body>
+<div id="div1"></div>
+<div id="div2"></div>
+</body>
+</html>
