@@ -123,7 +123,7 @@ var paoku = {
         renderBg: function (ctx) {
             var _this = this;
             _this.bg = new Image();
-            _this.bg.src = './img/background.jpg';
+            _this.bg.src = './img/game/background.jpg';
             ctx.drawImage(_this.bg, 0, 0, _this.w, _this.h);
         },
         renderBlock: function (ctx) {
@@ -209,7 +209,7 @@ var paoku = {
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }
                 if (i == 7) {
-                    _this.houseList[i].img.src = './img/house4.png';
+                    _this.houseList[i].img.src = './img/game/house4.png';
                     _this.houseList[i].size = [w * 0.527, w * 0.41];//407*316
                     _this.houseList[i].position[1] = top += _this.houseList[i - 1].renderSize[1] * 1.5;//位置水平竖直都变，
                 }

@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>CSS3动态数字翻转切换动画特效 - xw素材网</title>
+    <style type="text/css">
+
+        .cTop, .cBottom {
+            width: 94px;
+            position: absolute;
+            left: 0;
+            background-color: #fff;
+            background-repeat: no-repeat;
+            -webkit-transform-style: preserve-3d
+        }
+        .cTop {
+            height: 40px;
+            padding: 10px 10px 0;
+            top: 0;
+            background-position: center 10px;
+            transform-origin: center bottom
+        }
+        .cBottom {
+            height: 40px;
+            top: 50px;
+            padding: 0 10px 10px;
+            background-position: center -40px;
+            transform-origin: center top
+        }
+        .old .cTop, .old .cBottom {
+            z-index: 2;
+            background-image: url(img/1_03.png)
+        }
+        .new .cTop, .new .cBottom {
+            z-index: 1;
+            background-image: url(img/2_03.png)
+        }
+        @keyframes flipover-top {
+            0% {
+                z-index: 8;
+                background-color: #fff;
+                transform: rotateX(0);
+            }
+            50% {
+                z-index: 8;
+                background-color: #efefef;
+                transform: rotateX(-90deg);
+            }
+            51% {
+                z-index: 7;
+                opacity: 1;
+            }
+            100% {
+                z-index: 7;
+                background-color: #fff;
+                opacity: 0;
+                transform: rotateX(-180deg);
+            }
+        }
+        @keyframes flipover-bottom {
+            0% {
+                z-index: 7;
+                background-color: #fff;
+                transform: rotateX(180deg);
+            }
+            50% {
+                z-index: 7;
+                background-color: #efefef;
+                transform: rotateX(90deg);
+            }
+            51% {
+                z-index: 8;
+            }
+            100% {
+                z-index: 8;
+                background-color: #fff;
+                transform: rotateX(0);
+            }
+        }
+         .old .cTop {
+            -webkit-animation: flipover-top .5s linear 1s 1 normal forwards;
+            -moz-animation: flipover-top .5s linear 1s 1 normal forwards;
+            -ms-animation: flipover-top .5s linear 1s 1 normal forwards;
+            -o-animation: flipover-top .5s linear 1s 1 normal forwards;
+            animation: flipover-top .5s linear 1s 1 normal forwards
+        }
+         .new .cBottom {
+            -webkit-animation: flipover-bottom .5s linear 1s 1 normal forwards;
+            -moz-animation: flipover-bottom .5s linear 1s 1 normal forwards;
+            -ms-animation: flipover-bottom .5s linear 1s 1 normal forwards;
+            -o-animation: flipover-bottom .5s linear 1s 1 normal forwards;
+            animation: flipover-bottom .5s linear 1s 1 normal forwards
+        }
+    </style>
+</head>
+<body>
+        <ul >
+            <li class="old"><span class="cTop"></span> <span class="cBottom"></span>
+            </li>
+            <li class="new"><span class="cTop"></span> <span class="cBottom"></span>
+            </li>
+        </ul>
+</body>
+</html>
