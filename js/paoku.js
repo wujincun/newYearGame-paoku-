@@ -10,19 +10,12 @@ var paoku = {
     $time: $('#time'),
     w: $(window).width(),
     h: $(window).height(),
-
-
     animationTimeGap: 0,
     blockItemTop: 0,
     bgDistance: 0,//背景到start的位置
     runner: {},//人的集合
     houseList: [],
     blockList: [],//障碍物的数组集合
-    /*bgSpeed: 4,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
-     //要求速度变化，设置
-     bgMidSpeed: 6,
-     bgFastSpeed: 10,*/
-    //可以通过speedFlag来判断是何速度，背景图片切换的时候作为判断边界
     frameCount: 0,//每一帧的计算
     circle: 0,//背景循环次数
     isInit: false,
@@ -33,7 +26,6 @@ var paoku = {
     scoreFlag: false,
     blockflag: true,
     lastTime: 0,
-
     totalTime: 3000,
     runnerTime: 200,
     minBlockSizeM: 1 / 3.5,//最小最大比
@@ -72,9 +64,7 @@ var paoku = {
             img.src = imgs[i];
             img.onload = function () {
                 num--;
-                if (num > 0) {
-                    return;
-                }
+                if (num > 0) {return;}
                 _this.render()
             }
         }
@@ -163,12 +153,8 @@ var paoku = {
         _this.houseDisappearDistance = h * 290 / 1334; //房子消失的位置top
         _this.startToEndHouseDistance = h * (1334 - 290 - 394) / 1334; //最大房顶到最小房顶为650
         _this.leftStartToEndDistance = w * 216 / 750;                     //跑道倾斜角度为72度左右，那么移动的高是宽的3倍，大约为650/3=216；
-        // _this.startToEndHouseDistance = h * 900 / 1334; //最大房顶到最小房顶为650
-        // _this.leftStartToEndDistance = w * 300 / 750;                     //跑道倾斜角度为72度左右，那么移动的高是宽的3倍，大约为650/3=216；
         _this.houseSpeed = _this.baseHouseSpeed = _this.startToEndHouseDistance / _this.totalTime;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
         _this.leftBaseHouseSpeed = _this.leftStartToEndDistance / _this.totalTime;//水平方向上的速度
-
-
         for (var i = 0; i < 8; i++) {
             _this.houseList[i] = {};
             _this.houseList[i].img = new Image();
@@ -222,11 +208,8 @@ var paoku = {
             } else {
                 _this.houseList[i].position[0] = w - (_this.leftToHouseRightDistance - _this.houseList[i].radio * _this.leftStartToEndDistance)//位置水平竖直都变，
             }
-
             ctx.drawImage(_this.houseList[i].img,_this.houseList[i].position[0], _this.houseList[i].position[1],_this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
-
-
     },//画背景的两侧建筑
     renderRunner: function (ctx) {
         var _this = this;
