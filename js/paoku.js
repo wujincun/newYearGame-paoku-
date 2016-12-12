@@ -257,7 +257,6 @@ var paoku = {
     run: function (ctx) {
         var _this = this;
         var timeGap, seconds;
-
         function animateRun() {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
             //计时
