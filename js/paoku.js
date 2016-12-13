@@ -10,21 +10,16 @@ var paoku = {
     $time: $('#time'),
     w: $(window).width(),
     h: $(window).height(),
-    animationTimeGap: 0,
-    blockItemTop: 0,
-    bgDistance: 0,//背景到start的位置
     runner: {},//人的集合
-    houseList: [],
+    houseList: [],//房子的集合
     blockList: [],//障碍物的数组集合
     frameCount: 0,//每一帧的计算
-    circle: 0,//背景循环次数
     isInit: false,
     rafId: '',//动画的id
     flag: false,//标志是否跳起 true为跳起
     isUp: false,//是否向上跳
     score: 0,//分数
     scoreFlag: false,
-    blockflag: true,
     lastTime: 0,
     totalTime: 3000,
     runnerTime: 200,
@@ -34,6 +29,9 @@ var paoku = {
     blockS: 0,
     houseS: 0,
 
+    API:{
+        getResult:'./mock/getResult.json'
+    },
     init: function () {
         var _this = this;
         //加载完图片后render
@@ -42,21 +40,13 @@ var paoku = {
             './img/game/2.png',
             './img/game/3.png',
             './img/game/background.jpg',
-            './img/game/bag.png',
             './img/game/block.png',
-            './img/game/btnBackground.png',
-            './img/game/child.png',
-            './img/game/close.png',
-            './img/game/couponClose.png',
             './img/game/cutTimeBackground.png',
-            './img/game/failHeader.png',
             './img/game/house1.png',
             './img/game/house2.png',
             './img/game/house3.png',
             './img/game/house4.png',
-            './img/game/popBackground.png',
-            './img/game/runner.png',
-            './img/game/successHeader.png'
+            './img/game/runner.png'
         ];
         var num = imgs.length;
         for (var i = 0; i < num; i++) {
@@ -267,9 +257,12 @@ var paoku = {
             //位移
             var curTime = Date.now();
             if (_this.lastTime > 0) {
-                _this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
-                _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
-                _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)
+                if(curTime - _this.lastTime < 1000){
+                    _this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
+                    _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
+                    _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)
+                }
+
             }
             _this.lastTime = curTime;
             //画
@@ -280,7 +273,6 @@ var paoku = {
             _this.renderBg(ctx);
             //_this.runBlock(ctx);
             _this.runHouse(ctx);
-            _this.animationTimeGap = 0;
 
             if (_this.flag) {//跳起
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
@@ -297,7 +289,7 @@ var paoku = {
                     }
                 }
             }
-            _this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
+            //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
         animateRun();
     },
@@ -370,19 +362,7 @@ var paoku = {
         //小人中心点坐标
         _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
         //障碍物中心点坐标
-        //翻越栅栏
-        for (var i = 0; i < _this.blockList.length; i++) {//循环block看block在runner前还是runner后
-            var blockItem = _this.blockList[i];
-            if(blockItem.position[1]  < _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1]){
-                _this.runBlock(blockItem,ctx);
-                //ctx.drawImage(blockItem.img,blockItem.position[0],blockItem.position[1],blockItem.renderSize[0],blockItem.renderSize[1])
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-            }else{
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                _this.runBlock(blockItem,ctx);
-                //ctx.drawImage(blockItem.img,blockItem.position[0],blockItem.position[1],blockItem.renderSize[0],blockItem.renderSize[1])
-            }
-        }
+        _this.runRunnerBlock(ctx)
     },
     jumpRunner: function (ctx) {
         var _this = this;
@@ -416,18 +396,7 @@ var paoku = {
             _this.runner.renderSize = [_this.runner.size[0] * _this.runner.houseSizeRadio, _this.runner.size[1] * _this.runner.houseSizeRadio];
 
         }
-        for (var i = 0; i < _this.blockList.length; i++) {//循环block看block在runner前还是runner后
-            var blockItem = _this.blockList[i];
-            if(blockItem.position[1]  < _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1]){
-                _this.runBlock(blockItem,ctx);
-                //ctx.drawImage(blockItem.img,blockItem.position[0],blockItem.position[1],blockItem.renderSize[0],blockItem.renderSize[1])
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-            }else{
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                _this.runBlock(blockItem,ctx);
-                //ctx.drawImage(blockItem.img,blockItem.position[0],blockItem.position[1],blockItem.renderSize[0],blockItem.renderSize[1])
-            }
-        }
+        _this.runRunnerBlock(ctx);
         //加分
         for (var j = 0; j < _this.blockList.length; j++) {
             if (_this.collisionTest(_this.blockList[j])) {
@@ -435,18 +404,75 @@ var paoku = {
             }
         }
     },
+    runRunnerBlock: function (ctx) {
+        var _this = this;
+        var w = _this.w;
+        for (var i = 0; i < _this.blockList.length; i++) {//循环block看block在runner前还是runner后
+            var blockItem = _this.blockList[i];
+            if (blockItem.position[1] <= _this.blockDisappearDistance){
+                blockItem.renderSize = [w * 0.5 * 1.5, w * 0.5 * 159 * 1.5 / 376];
+                blockItem.position = [(w - blockItem.renderSize[0]) / 2, _this.blockDisappearDistance + _this.blockToBlockDistance * 3];
+            } else {
+                blockItem.radio = (blockItem.position[1] - _this.blockDisappearDistance) / _this.startToEndBlockDistance;
+                blockItem.blockSizeRadio = blockItem.radio * (1 - _this.minBlockSizeM) + _this.minBlockSizeM;
+                blockItem.renderSize = [_this.blockSize[0] * blockItem.blockSizeRadio, _this.blockSize[1] * blockItem.blockSizeRadio];
+                blockItem.position = [(w - blockItem.renderSize[0]) / 2, blockItem.position[1] - _this.blockS];
+            }
+            if(blockItem.position[1]  < _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1]){
+                ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
+                //_this.runBlock(blockItem,ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+            }else{
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                //_this.runBlock(blockItem,ctx);
+                ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
+            }
+        }
+    },
     bind: function (ctx) {
         var _this = this;
         //swiperUp
-        var initY, initX, moveY, moveX, distanceY, temp;
+        var initY, initX, moveY, moveX, distanceY;
+        var $popContainer = $('.popContainer');
+        var $gamePopContainer = $('#gamePopContainer');
+        var $successPop = $gamePopContainer.find('.successPop');
+        var $resultPopContainer = $('#resultPopContainer');
+        var $getCouponPop = $resultPopContainer.find('.getCouponPop');
+        var $couponMoneyNum = $getCouponPop.find('.couponMoneyNum');
+        var $noCouponPop = $resultPopContainer.find('.noCouponPop');
 
-        canvas.addEventListener('touchstart', function (e) {
+        canvas.addEventListener('touchstart', canvasTouchStart);
+        canvas.addEventListener('touchmove',canvasTouchMove);
+        $popContainer.on('touchstart','.close',function () {
+            $popContainer.hide()
+        });
+        $successPop.on('touchstart','.couponBag',function () {
+            $.ajax({
+                url:_this.API.getResult,
+                type:'GET',
+                dataType:'json',
+                data:{
+                    
+                }
+            }).done(function (data) {
+                $resultPopContainer.css('display','-webkit-box');
+                $gamePopContainer.hide();
+                if(data.code == 200){
+                    $getCouponPop.show();
+                    $noCouponPop.hide();
+                    $couponMoneyNum.text();
+                }else{
+                    $noCouponPop.show();
+                    $getCouponPop.hide();
+                }
+            })
+        });
+        function canvasTouchStart(e){
             e.preventDefault();
             moveY = initY = e.targetTouches[0].pageY;
             moveX = initX = e.targetTouches[0].pageX;
-            temp = _this.runner.position[1];
-        });
-        canvas.addEventListener('touchmove', function (e) {
+        }
+        function canvasTouchMove(e) {
             e.preventDefault();
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
                 _this.flag = true;
@@ -462,27 +488,25 @@ var paoku = {
                 }
                 return false;
             }
-        });
+        }
     },
+
 //碰撞检测
     collisionTest: function (blockItem) {
         var _this = this;
-        //障碍物中心点坐标
-        //blockHoriCenterCord = [blockItem.position[0] + blockItem.renderSize[0] / 2, blockItem.position[1] + blockItem.renderSize[1] / 2];//认为中心在栏杆整张图的上部分1/5
-        //判断位置，跨栏的高度只占1/3
-        //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
         //底部重合
         var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1];
-        if(blockItem.position[1] < coincideStart && blockItem.position[1] > coincideStart - 20*_this.h/1334 ){//20自定
+        if(blockItem.position[1] < coincideStart && blockItem.position[1] > coincideStart - 30*_this.h/1334 ){//30自定
             return true
         }else{
             return false;
         }
-        /*if (Math.abs(_this.runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.renderSize[1] + blockItem.renderSize[1] ) / 16) {
+       /* //障碍物中心点坐标
+        blockHoriCenterCord = [blockItem.position[0] + blockItem.renderSize[0] / 2, blockItem.position[1] + blockItem.renderSize[1] / 2];//认为中心在栏杆整张图的上部分1/5
+        if (Math.abs(_this.runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.renderSize[1] + blockItem.renderSize[1] ) / 16) {
             return true
         }
         return false;*/
-        //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
     },
     handleCollision: function () {
         var _this = this;
@@ -490,7 +514,18 @@ var paoku = {
         _this.gameOver();
     },
     gameOver: function () {
-        alert('Game Over');
+        var _this = this;
+        var $gamePopContainer = $('#gamePopContainer');
+        var $successPop = $gamePopContainer.find('.successPop');
+        var $failPop = $gamePopContainer.find('.failPop');
+        $gamePopContainer.css('display','-webkit-box');
+        if(_this.score >= 50){
+            $successPop.show();
+            $failPop.hide()
+        }else{
+            $successPop.hide();
+            $failPop.show()
+        }
         /*canvas.removeEventListener('touchstart', this.handleTouchStart, true);//解绑
          canvas.removeEventListener('touchmove', this.handleTouchMove, true)*/
     },
@@ -506,7 +541,6 @@ var paoku = {
                 _this.houseSpeed = _this.baseHouseSpeed*1.5;
             }
         }
-
     }
 };
 paoku.init();

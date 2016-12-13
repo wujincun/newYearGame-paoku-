@@ -20,6 +20,7 @@ a{ text-decoration:none;}
   font-size: 36px;
 }*/
 //game
+@red:#fb0c2c;
 #view_game{
   //header
   .topBar{
@@ -99,4 +100,121 @@ a{ text-decoration:none;}
     }
   }
 }
+.popContainer{
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  //display: -webkit-box;
+  display: none;
+  -webkit-box-pack:center;
+  background-color: rgba(0,0,0,.3);
+  .red{
+    color: @red;
+  }
+}
+#gamePopContainer{
+  .successOrFail{
+    margin-top: 2rem;
+    position: relative;
+    display: none;
+  }
+  .successOrFail .close{
+    position: absolute;
+    left: 0;
+    bottom: -2.2933rem;
+    height: 2.2933rem;
+    width: 100%;
+    background: url("../img/game/close.png") center center no-repeat;
+    background-size: 0.8233rem 0.8266rem;
+  }
+  .successOrFail .text{
+    margin-top: 3.7333rem;
+    font-size: 0.4267rem;
+    text-align: center;
+    font-weight: bold;
+    line-height: 0.8rem;
+  }
+  .successPop{
+    background: url("../img/game/success_03.png") left center no-repeat;
+    height: 13.5rem;
+    width: 8.62rem;
+    background-size: contain;
+    .couponBags{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      display: -webkit-box;
+      -webkit-box-pack:center;
+      width: 100%;
+      .couponBag{
+        height: 3.2rem;
+        width: 33%;
+      }
+    }
+
+  }
+  .failPop{
+    background: url("../img/game/fail_03.png") left center no-repeat;
+    height: 13.5333rem;
+    width: 8.64rem;
+    background-size: contain;
+    .buttonsArea{
+      position: absolute;
+      left: 0;
+      bottom: 0.92rem;
+      display: -webkit-box;
+      -webkit-box-pack:center;
+      width: 100%;
+      a{
+        height: 0.9333rem;
+        width: 50%;
+        display: block;
+      }
+    }
+  }
+}
+#resultPopContainer{
+  -webkit-box-align: center;
+  .resultPop{
+    background: url("../img/game/result.png") left center no-repeat;
+    height: 6.3867rem;
+    width: 6.6rem;
+    background-size: contain;
+    position: relative;
+    display: none;
+    .share{
+      position: absolute;
+      bottom: 0.56rem;
+      left: 1.6rem;
+      width: 3.24rem;
+      height: 0.9333rem;
+    }
+    .close{
+      position: absolute;
+      height: 1.2rem;
+      width: 1.2rem;
+      top: 1.7rem;
+      right: -0.3rem;
+    }
+    .text{
+      margin-top: 2.7733rem;
+      p{
+        font-size: 0.4267rem;
+        text-align: center;
+        font-weight: bold;
+        line-height: 0.8rem;
+      }
+    }
+  }
+  .noCouponPop{
+    .text{
+      .noCouponHint{
+        font-size: 0.4rem;
+      }
+    }
+  }
+}
+
 
