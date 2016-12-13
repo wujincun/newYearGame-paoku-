@@ -257,11 +257,12 @@ var paoku = {
             //位移
             var curTime = Date.now();
             if (_this.lastTime > 0) {
-                if(curTime - _this.lastTime < 1000){
-                    _this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
-                    _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
-                    _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)
-                }
+                _this.blockS = _this.blockSpeed * 15;
+                _this.houseS = _this.houseSpeed * 15;
+                _this.runnerS = _this.runnerSpeed * 15
+                /*_this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
+                _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
+                _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)*/
 
             }
             _this.lastTime = curTime;
@@ -420,11 +421,9 @@ var paoku = {
             }
             if(blockItem.position[1]  < _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1]){
                 ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
-                //_this.runBlock(blockItem,ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
             }else{
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                //_this.runBlock(blockItem,ctx);
                 ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
             }
         }
