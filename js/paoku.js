@@ -206,6 +206,18 @@ var paoku = {
             ctx.drawImage(_this.houseList[i].img, _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
     },//画背景的两侧建筑
+    renderRunnerShadow: function (ctx) {
+        var _this = this;
+        var w = this.w;
+        var h = this.h;
+        //按照图片尺寸设定人物宽高
+        _this.runnerShadow.img = new Image();
+        _this.runnerShadow.img.src = './img/game/runnerShadow.png';
+        _this.runnerShadow.size = [w * 0.132, w * 0.132 * 32 / 99];//99*32
+        _this.runnerShadow.renderSize = [_this.runnerShadow.size[0], _this.runnerShadow.size[1]];
+        _this.runnerShadow.position = [(w-_this.runnerShadow.renderSize[0])/2,760*h/1334];//760量的
+        ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
+    },
     renderRunner: function (ctx) {
         var _this = this;
         var w = this.w;
@@ -216,7 +228,7 @@ var paoku = {
         _this.runner.size = [w * 0.22 * 0.95, w * 0.22 * 263 / 165 * 0.95];
         _this.runner.renderSize = [_this.runner.size[0], _this.runner.size[1]];
         _this.runner.centerposition = (w - _this.runner.renderSize[0]) / 2;
-        _this.runner.position = [_this.runner.centerposition, 515*h/1334];//515看图定的
+        _this.runner.position = [_this.runner.centerposition, _this.runnerShadow.position[1] - _this.runner.renderSize[1] + _this.runnerShadow.renderSize[1]*1/2];//515看图定的
         _this.runner.floor = [_this.runner.centerposition, _this.runner.position[1]];
         _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 300 * h / 1334];
         _this.runnerSpeed = _this.baseRunnerSpeed = 300 * h / (_this.runnerTime * 1334);
@@ -224,18 +236,6 @@ var paoku = {
         _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
 
         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-    },
-    renderRunnerShadow: function (ctx) {
-        var _this = this;
-        var w = this.w;
-        var h = this.h;
-        //按照图片尺寸设定人物宽高
-        _this.runnerShadow.img = new Image();
-        _this.runnerShadow.img.src = './img/game/runnerShadow.png';
-        _this.runnerShadow.size = [w * 0.132, w * 0.132 * 32 / 99];//99*32
-        _this.runnerShadow.renderSize = [_this.runnerShadow.size[0], _this.runnerShadow.size[1]];
-        _this.runnerShadow.position = [(w-_this.runnerShadow.renderSize[0])/2,740*h/1334];//740量的
-        ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
     },
     renderListener: function (ctx) {
         var _this = this;
@@ -418,10 +418,12 @@ var paoku = {
     },
     runRunnerShadow:function (ctx) {
         var _this = this;
-        _this.runnerShadow.radio = (_this.runner.position[1]-_this.runner.floor[1]) / (_this.runner.ceiling[1]-_this.runner.floor[1]);
+        var w = _this.w;
+        _this.runnerShadow.radio = (_this.runner.ceiling[1] - _this.runner.position[1]) / (_this.runner.ceiling[1]-_this.runner.floor[1]);
         _this.runnerShadow.radio= _this.runnerShadow.radio?_this.runnerShadow.radio:1;
         _this.runnerShadow.shadowSizeRadio = _this.runnerShadow.radio * (1 - _this.minShadowSizeM) + _this.minShadowSizeM;
         _this.runnerShadow.renderSize = [_this.runnerShadow.size[0] * _this.runnerShadow.shadowSizeRadio, _this.runnerShadow.size[1] * _this.runnerShadow.shadowSizeRadio];
+        _this.runnerShadow.position = [(w-_this.runnerShadow.renderSize[0])/2,_this.runnerShadow.position[1]];//740量的
         ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
     },
     bind: function (ctx) {
@@ -484,13 +486,6 @@ var paoku = {
     },
 
 //碰撞检测
-    collisionTest: function () {
-        var _this = this;
-        var index = _this.getIndex();
-        //底部重合
-        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
-        return (_this.blockList[index].position[1] < coincideStart && _this.blockList[index].position[1] > coincideStart - 30 * _this.h / 1334 )//30自定
-    },
     getIndex: function () {
         var _this = this;
         _this.successJump = false;
@@ -505,6 +500,13 @@ var paoku = {
             }
         }
         return index = _this.blockToRunnerA.indexOf(Math.min.apply(null, arr));
+    },
+    collisionTest: function () {
+        var _this = this;
+        var index = _this.getIndex();
+        //底部重合
+        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
+        return (_this.blockList[index].position[1] < coincideStart && _this.blockList[index].position[1] > coincideStart - 30 * _this.h / 1334 )//30自定
     },
     jumpCollisionTest: function () {
         var _this = this;
