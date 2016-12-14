@@ -227,9 +227,10 @@ var paoku = {
         _this.runner.img.src = './img/game/runner.png';
         _this.runner.size = [w * 0.22 * 0.95, w * 0.22 * 263 / 165 * 0.95];
         _this.runner.renderSize = [_this.runner.size[0], _this.runner.size[1]];
-        _this.runner.centerposition = (w - _this.runner.renderSize[0]) / 2;
-        _this.runner.position = [_this.runner.centerposition, _this.runnerShadow.position[1] - _this.runner.renderSize[1] + _this.runnerShadow.renderSize[1]*1/2];//515看图定的
-        _this.runner.floor = [_this.runner.centerposition, _this.runner.position[1]];
+        _this.runner.leftposition = (w - _this.runner.renderSize[0]) / 2;
+        _this.runner.topPosition = _this.runnerShadow.position[1] - _this.runner.renderSize[1] + _this.runnerShadow.renderSize[1]*1/2;
+        _this.runner.position = [_this.runner.leftposition,_this.runner.topPosition];
+        _this.runner.floor = [_this.runner.centerposition,_this.runner.topPosition + _this.runnerShadow.renderSize[1]*1/2];//???为什么一开始正常，
         _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 300 * h / 1334];
         _this.runnerSpeed = _this.baseRunnerSpeed = 300 * h / (_this.runnerTime * 1334);
         //小人中心点坐标
@@ -283,7 +284,6 @@ var paoku = {
                 /*_this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
                  _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
                  _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)*/
-
             }
             _this.lastTime = curTime;
             //画

@@ -59,6 +59,10 @@
     </div>
     <div class="part part7"></div>
 </div>
+<div class="ruleWrap">
+    <div class="ruleArea"></div>
+    <div class="close"></div>
+</div>
 <script src="js/flexible.js"></script>
 <script src="js/zepto.min.js"></script>
 <script>
@@ -70,8 +74,9 @@
         },
 
         bind:function () {
-            var $rule = $('.rele');
+            var $rule = $('.rule');
             var $themes = $('.theme');
+            var $ruleWrap = $('.ruleWrap');
             var windowH = $(window).height();
             $(window).on('scroll',function () {
                 var scrollTop = $(window).scrollTop();
@@ -85,9 +90,13 @@
 
                 });
             });
-            $rule.on('click',function () {
-
+            $rule.on('touchstart',function () {
+                $ruleWrap.show()
+            });
+            $ruleWrap.on('touchstart',function () {
+                $ruleWrap.hide()
             })
+
         }
     };
     newYearGame.init()
