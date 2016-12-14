@@ -13,6 +13,7 @@ var paoku = {
     runner: {},//人的集合
     houseList: [],//房子的集合
     blockList: [],//障碍物的数组集合
+    blockToRunnerA:[],//起跳前每个block到runner的距离的集合
     frameCount: 0,//每一帧的计算
     isInit: false,
     rafId: '',//动画的id
@@ -215,6 +216,8 @@ var paoku = {
         _this.runner.floor = [_this.runner.centerposition, _this.runner.position[1]];
         _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 300*h/1334];
         _this.runnerSpeed = _this.baseRunnerSpeed = 300*h / (_this.runnerTime*1334);
+        //小人中心点坐标
+        _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
 
         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
     },
@@ -313,24 +316,6 @@ var paoku = {
     runHouse: function (ctx) {
         var _this = this;
         var w = _this.w;
-        var h = _this.h;
-        /* for (var i = 0; i < 8; i++) {
-         if (_this.houseList[i].position[1] <= _this.houseDisappearDistance) {
-         var maxHouseH = Math.max(_this.houseList[0].renderSize[1], _this.houseList[1].renderSize[1], _this.houseList[2].renderSize[1], _this.houseList[3].renderSize[1]);
-         _this.houseList[i].position[1] = _this.houseDisappearDistance + (_this.houseList[0].renderSize[1] + _this.houseList[1].renderSize[1] + _this.houseList[2].renderSize[1] + _this.houseList[3].renderSize[1]) * 1.5 - maxHouseH;
-         } else {
-         _this.houseList[i].position[1] = _this.houseList[i].position[1] - _this.houseS;
-         }
-         _this.houseList[i].radio = (_this.houseList[i].position[1] - _this.houseDisappearDistance) / _this.startToEndHouseDistance;
-         _this.houseList[i].houseSizeRadio = _this.houseList[i].radio * (1 - _this.minHouseSizeM) + _this.minHouseSizeM;
-         _this.houseList[i].renderSize = [_this.houseList[i].size[0] * _this.houseList[i].houseSizeRadio, _this.houseList[i].size[1] * _this.houseList[i].houseSizeRadio];
-         if(i<4){
-         _this.houseList[i].position[0] = _this.leftToHouseRightDistance - _this.houseList[i].radio * _this.leftStartToEndDistance - _this.houseList[i].renderSize[0];//位置水平竖直都变，
-         }else{
-         _this.houseList[i].position[0] = w - (_this.leftToHouseRightDistance - _this.houseList[i].radio * _this.leftStartToEndDistance);//位置水平竖直都变，
-         }
-         ctx.drawImage(_this.houseList[i].img, _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
-         }*/
         for (var i = 0; i < 8; i++) {
             if (i < 4) {
                 if (_this.houseList[i].position[1] <= _this.houseDisappearDistance) {
@@ -360,9 +345,7 @@ var paoku = {
     },
     runRunner: function (ctx) {
         var _this = this;
-        //小人中心点坐标
-        _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
-        //障碍物中心点坐标
+       //障碍物中心点坐标
         _this.runRunnerBlock(ctx)
     },
     jumpRunner: function (ctx) {
@@ -419,12 +402,12 @@ var paoku = {
                 blockItem.renderSize = [_this.blockSize[0] * blockItem.blockSizeRadio, _this.blockSize[1] * blockItem.blockSizeRadio];
                 blockItem.position = [(w - blockItem.renderSize[0]) / 2, blockItem.position[1] - _this.blockS];
             }
-            if(blockItem.position[1]  < _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1]){
-                ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-            }else{
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
+            if(blockItem.position[1]  < _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1]) {
+                    ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
+                    ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+            } else {
+                    ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                    ctx.drawImage(blockItem.img, blockItem.position[0], blockItem.position[1], blockItem.renderSize[0], blockItem.renderSize[1]);
             }
         }
     },
@@ -482,10 +465,7 @@ var paoku = {
                 moveY = e.targetTouches[0].pageY;
                 distanceX = moveX - initX;
                 distanceY = moveY - initY;
-                if (Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30) {//判断向上滑
-                    return true
-                }
-                return false;
+                return (Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30);//判断向上滑
             }
         }
     },
@@ -495,17 +475,20 @@ var paoku = {
         var _this = this;
         //底部重合
         var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - blockItem.renderSize[1];
-        if(blockItem.position[1] < coincideStart && blockItem.position[1] > coincideStart - 30*_this.h/1334 ){//30自定
-            return true
-        }else{
-            return false;
-        }
+        return (blockItem.position[1] < coincideStart && blockItem.position[1] > coincideStart - 30*_this.h/1334 )//30自定
        /* //障碍物中心点坐标
         blockHoriCenterCord = [blockItem.position[0] + blockItem.renderSize[0] / 2, blockItem.position[1] + blockItem.renderSize[1] / 2];//认为中心在栏杆整张图的上部分1/5
         if (Math.abs(_this.runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.renderSize[1] + blockItem.renderSize[1] ) / 16) {
             return true
         }
         return false;*/
+    },
+    jumpCollisionTest:function () {
+        var _this = this;
+        for(var i=0;i<_this.blockList.length;i++){
+            var blockItem = _this.blockList[i];
+            _this.blockToRunnerA.push()
+        }
     },
     handleCollision: function () {
         var _this = this;
