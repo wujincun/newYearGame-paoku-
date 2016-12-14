@@ -10,7 +10,8 @@ var paoku = {
     $time: $('#time'),
     w: $(window).width(),
     h: $(window).height(),
-    runner: {},//人的集合
+    runner: {},//人
+    runnerShadow: {},//人的阴影
     houseList: [],//房子的集合
     blockList: [],//障碍物的数组集合
     frameCount: 0,//每一帧的计算
@@ -25,11 +26,12 @@ var paoku = {
     minBlockSizeM: 1 / 3.5,//最小最大比
     minHouseSizeM: 1 / 3.5,
     maxRunnerSizeM: 1.05,
+    minShadowSizeM: 1 / 2,
     blockS: 0,
     houseS: 0,
 
-    API:{
-        getResult:'./mock/getResult.json'
+    API: {
+        getResult: './mock/getResult.json'
     },
     init: function () {
         var _this = this;
@@ -45,7 +47,8 @@ var paoku = {
             './img/game/house2.png',
             './img/game/house3.png',
             './img/game/house4.png',
-            './img/game/runner.png'
+            './img/game/runner.png',
+            './img/game/runnerShadow.png'
         ];
         var num = imgs.length;
         for (var i = 0; i < num; i++) {
@@ -53,7 +56,9 @@ var paoku = {
             img.src = imgs[i];
             img.onload = function () {
                 num--;
-                if (num > 0) {return;}
+                if (num > 0) {
+                    return;
+                }
                 _this.render()
             }
         }
@@ -94,6 +99,7 @@ var paoku = {
         _this.renderBg(ctx);
         _this.renderBlock(ctx);
         _this.renderHouse(ctx);
+        _this.renderRunnerShadow(ctx);
         _this.renderRunner(ctx);
 
         if (!this.isInit) {
@@ -197,7 +203,7 @@ var paoku = {
             } else {
                 _this.houseList[i].position[0] = w - (_this.leftToHouseRightDistance - _this.houseList[i].radio * _this.leftStartToEndDistance)//位置水平竖直都变，
             }
-            ctx.drawImage(_this.houseList[i].img,_this.houseList[i].position[0], _this.houseList[i].position[1],_this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
+            ctx.drawImage(_this.houseList[i].img, _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
     },//画背景的两侧建筑
     renderRunner: function (ctx) {
@@ -210,14 +216,26 @@ var paoku = {
         _this.runner.size = [w * 0.22 * 0.95, w * 0.22 * 263 / 165 * 0.95];
         _this.runner.renderSize = [_this.runner.size[0], _this.runner.size[1]];
         _this.runner.centerposition = (w - _this.runner.renderSize[0]) / 2;
-        _this.runner.position = [_this.runner.centerposition, (h - _this.runner.renderSize[1] * 1.2) / 2];//1.2看图定的
+        _this.runner.position = [_this.runner.centerposition, 515*h/1334];//515看图定的
         _this.runner.floor = [_this.runner.centerposition, _this.runner.position[1]];
-        _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 300*h/1334];
-        _this.runnerSpeed = _this.baseRunnerSpeed = 300*h / (_this.runnerTime*1334);
+        _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 300 * h / 1334];
+        _this.runnerSpeed = _this.baseRunnerSpeed = 300 * h / (_this.runnerTime * 1334);
         //小人中心点坐标
         _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
 
         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+    },
+    renderRunnerShadow: function (ctx) {
+        var _this = this;
+        var w = this.w;
+        var h = this.h;
+        //按照图片尺寸设定人物宽高
+        _this.runnerShadow.img = new Image();
+        _this.runnerShadow.img.src = './img/game/runnerShadow.png';
+        _this.runnerShadow.size = [w * 0.132, w * 0.132 * 32 / 99];//99*32
+        _this.runnerShadow.renderSize = [_this.runnerShadow.size[0], _this.runnerShadow.size[1]];
+        _this.runnerShadow.position = [(w-_this.runnerShadow.renderSize[0])/2,740*h/1334];//740量的
+        ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
     },
     renderListener: function (ctx) {
         var _this = this;
@@ -248,6 +266,7 @@ var paoku = {
     run: function (ctx) {
         var _this = this;
         var timeGap, seconds;
+
         function animateRun() {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
             //计时
@@ -262,8 +281,8 @@ var paoku = {
                 _this.houseS = _this.houseSpeed * 15;
                 _this.runnerS = _this.runnerSpeed * 15
                 /*_this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
-                _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
-                _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)*/
+                 _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
+                 _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)*/
 
             }
             _this.lastTime = curTime;
@@ -273,7 +292,6 @@ var paoku = {
             _this.frameCount++;
 
             _this.renderBg(ctx);
-            //_this.runBlock(ctx);
             _this.runHouse(ctx);
 
             if (_this.flag) {//跳起
@@ -283,7 +301,7 @@ var paoku = {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
                 if (_this.frameCount % 5 == 0) {
-                    if (_this.collisionTest()){
+                    if (_this.collisionTest()) {
                         _this.handleCollision();
                         return false;
                     }
@@ -291,12 +309,13 @@ var paoku = {
             }
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
+
         animateRun();
     },
     runBlock: function (ctx) {
         var _this = this;
         var w = _this.w;
-        for(var i=0;i<_this.blockList.length;i++){
+        for (var i = 0; i < _this.blockList.length; i++) {
             var blockItem = _this.blockList[i];
             if (blockItem.position[1] <= _this.blockDisappearDistance) {
                 blockItem.renderSize = [w * 0.5 * 1.5, w * 0.5 * 159 * 1.5 / 376];
@@ -345,10 +364,12 @@ var paoku = {
         //判断
         var index = _this.getIndex();
         var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
-        if(_this.blockList[index].position[1] < coincideStart || _this.blockList[index].position[1]> (_this.runner.position[1]-_this.blockList[index].renderSize[1] + _this.blockToBlockDistance)){
+        if (_this.blockList[index].position[1] < coincideStart || _this.blockList[index].position[1] > (_this.runner.position[1] - _this.blockList[index].renderSize[1] + _this.blockToBlockDistance)) {
             _this.runBlock(ctx);
+            _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-        }else{
+        } else {
+            _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
             _this.runBlock(ctx);
         }
@@ -385,13 +406,23 @@ var paoku = {
             _this.runner.renderSize = [_this.runner.size[0] * _this.runner.houseSizeRadio, _this.runner.size[1] * _this.runner.houseSizeRadio];
 
         }
-        if(_this.successJump && _this.isUp){
+        if (_this.successJump && _this.isUp) {
             _this.runBlock(ctx);
+            _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-        }else{
+        } else {
+            _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
             _this.runBlock(ctx);
         }
+    },
+    runRunnerShadow:function (ctx) {
+        var _this = this;
+        _this.runnerShadow.radio = (_this.runner.position[1]-_this.runner.floor[1]) / (_this.runner.ceiling[1]-_this.runner.floor[1]);
+        _this.runnerShadow.radio= _this.runnerShadow.radio?_this.runnerShadow.radio:1;
+        _this.runnerShadow.shadowSizeRadio = _this.runnerShadow.radio * (1 - _this.minShadowSizeM) + _this.minShadowSizeM;
+        _this.runnerShadow.renderSize = [_this.runnerShadow.size[0] * _this.runnerShadow.shadowSizeRadio, _this.runnerShadow.size[1] * _this.runnerShadow.shadowSizeRadio];
+        ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
     },
     bind: function (ctx) {
         var _this = this;
@@ -406,36 +437,35 @@ var paoku = {
         var $noCouponPop = $resultPopContainer.find('.noCouponPop');
 
         canvas.addEventListener('touchstart', canvasTouchStart);
-        canvas.addEventListener('touchmove',canvasTouchMove);
-        $popContainer.on('touchstart','.close',function () {
+        canvas.addEventListener('touchmove', canvasTouchMove);
+        $popContainer.on('touchstart', '.close', function () {
             $popContainer.hide()
         });
-        $successPop.on('touchstart','.couponBag',function () {
+        $successPop.on('touchstart', '.couponBag', function () {
             $.ajax({
-                url:_this.API.getResult,
-                type:'GET',
-                dataType:'json',
-                data:{
-                    
-                }
+                url: _this.API.getResult,
+                type: 'GET',
+                dataType: 'json',
+                data: {}
             }).done(function (data) {
-                $resultPopContainer.css('display','-webkit-box');
+                $resultPopContainer.css('display', '-webkit-box');
                 $gamePopContainer.hide();
-                if(data.code == 200){
+                if (data.code == 200) {
                     $getCouponPop.show();
                     $noCouponPop.hide();
                     $couponMoneyNum.text();
-                }else{
+                } else {
                     $noCouponPop.show();
                     $getCouponPop.hide();
                 }
             })
         });
-        function canvasTouchStart(e){
+        function canvasTouchStart(e) {
             e.preventDefault();
             moveY = initY = e.targetTouches[0].pageY;
             moveX = initX = e.targetTouches[0].pageX;
         }
+
         function canvasTouchMove(e) {
             e.preventDefault();
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
@@ -459,9 +489,9 @@ var paoku = {
         var index = _this.getIndex();
         //底部重合
         var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
-        return (_this.blockList[index].position[1] < coincideStart && _this.blockList[index].position[1] > coincideStart - 30*_this.h/1334 )//30自定
+        return (_this.blockList[index].position[1] < coincideStart && _this.blockList[index].position[1] > coincideStart - 30 * _this.h / 1334 )//30自定
     },
-    getIndex:function () {
+    getIndex: function () {
         var _this = this;
         _this.successJump = false;
         var arr = [];
@@ -476,7 +506,7 @@ var paoku = {
         }
         return index = _this.blockToRunnerA.indexOf(Math.min.apply(null, arr));
     },
-    jumpCollisionTest:function(){
+    jumpCollisionTest: function () {
         var _this = this;
         var index = _this.getIndex();
         var runnerFooter = _this.runner.position[1] + _this.runner.renderSize[1];
@@ -492,11 +522,11 @@ var paoku = {
         var $gamePopContainer = $('#gamePopContainer');
         var $successPop = $gamePopContainer.find('.successPop');
         var $failPop = $gamePopContainer.find('.failPop');
-        $gamePopContainer.css('display','-webkit-box');
-        if(_this.score >= 50){
+        $gamePopContainer.css('display', '-webkit-box');
+        if (_this.score >= 50) {
             $successPop.show();
             $failPop.hide()
-        }else{
+        } else {
             $successPop.hide();
             $failPop.show()
         }
@@ -505,14 +535,14 @@ var paoku = {
     },
     changeSpeed: function () {
         var _this = this;
-        if(_this.score>50){
-            var scoreGap = Math.floor(_this.score/50);
+        if (_this.score > 50) {
+            var scoreGap = Math.floor(_this.score / 50);
             if (scoreGap % 2) {
-                _this.blockSpeed = _this.baseBlockSpeed*1.2;
-                _this.houseSpeed = _this.baseHouseSpeed*1.2;
-            }else{
-                _this.blockSpeed = _this.baseBlockSpeed*1.5;
-                _this.houseSpeed = _this.baseHouseSpeed*1.5;
+                _this.blockSpeed = _this.baseBlockSpeed * 1.2;
+                _this.houseSpeed = _this.baseHouseSpeed * 1.2;
+            } else {
+                _this.blockSpeed = _this.baseBlockSpeed * 1.5;
+                _this.houseSpeed = _this.baseHouseSpeed * 1.5;
             }
         }
     }
