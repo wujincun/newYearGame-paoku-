@@ -506,7 +506,7 @@ var paoku = {
         var _this = this;
         var index = _this.getIndex();
         //底部重合
-        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
+        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];//应该为起跳的最高点-bS*runnerT
         _this.collisionLine = coincideStart -  _this.blockSpeed *_this.runnerTime;
         return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
     },
