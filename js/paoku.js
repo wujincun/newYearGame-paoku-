@@ -231,7 +231,7 @@ var paoku = {
         _this.runner.topPosition = _this.runnerShadow.position[1] - _this.runner.renderSize[1] + _this.runnerShadow.renderSize[1]*1/2;
         _this.runner.position = [_this.runner.leftposition,_this.runner.topPosition];
         _this.runner.floor = [_this.runner.centerposition,_this.runner.topPosition + _this.runnerShadow.renderSize[1]*1/2];//???为什么一开始正常，
-        _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 300 * h / 1334];
+        _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 200 * h / 1334];
         _this.runnerSpeed = _this.baseRunnerSpeed = 300 * h / (_this.runnerTime * 1334);
         //小人中心点坐标
         _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
@@ -309,7 +309,6 @@ var paoku = {
             }
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
-
         animateRun();
     },
     runBlock: function (ctx) {
@@ -363,15 +362,16 @@ var paoku = {
         var _this = this;
         //判断
         var index = _this.getIndex();
-        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
-        if (_this.blockList[index].position[1] < coincideStart || _this.blockList[index].position[1] > (_this.runner.position[1] - _this.blockList[index].renderSize[1] + _this.blockToBlockDistance)) {
-            _this.runBlock(ctx);
+        var blockItem = _this.blockList[index];
+        var shadowFooter = _this.runnerShadow.position[1] + _this.runnerShadow.renderSize[1];
+        if (blockItem.position[1] < shadowFooter && blockItem.position[1] > _this.collisionLine + 20*_this.h/1334 ) {//30随意定的
             _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+            _this.runBlock(ctx);
         } else {
             _this.runRunnerShadow(ctx);
-            ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
             _this.runBlock(ctx);
+            ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
         }
     },
     jumpRunner: function (ctx) {
@@ -472,7 +472,8 @@ var paoku = {
             e.preventDefault();
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
                 _this.flag = true;
-                _this.jumpCollisionTest();//起跳时判断是否成功
+                var index = _this.getIndex();
+                _this.jumpCollisionTest(index);//起跳时判断是否成功
                 _this.run(ctx);
             }
             function checkMoveUp(e) {
@@ -506,11 +507,11 @@ var paoku = {
         var index = _this.getIndex();
         //底部重合
         var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];
-        return (_this.blockList[index].position[1] < coincideStart && _this.blockList[index].position[1] > coincideStart - 30 * _this.h / 1334 )//30自定
+        _this.collisionLine = coincideStart -  _this.blockSpeed *_this.runnerTime;
+        return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
     },
-    jumpCollisionTest: function () {
+    jumpCollisionTest: function (index) {
         var _this = this;
-        var index = _this.getIndex();
         var runnerFooter = _this.runner.position[1] + _this.runner.renderSize[1];
         return _this.successJump = (_this.blockList[index].position[1] < runnerFooter && _this.blockList[index].position[1] > (runnerFooter - _this.blockList[index].renderSize[1]))
     },
@@ -524,7 +525,7 @@ var paoku = {
         var $gamePopContainer = $('#gamePopContainer');
         var $successPop = $gamePopContainer.find('.successPop');
         var $failPop = $gamePopContainer.find('.failPop');
-        $gamePopContainer.css('display', '-webkit-box');
+        //$gamePopContainer.css('display', '-webkit-box');
         if (_this.score >= 50) {
             $successPop.show();
             $failPop.hide()
