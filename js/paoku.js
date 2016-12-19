@@ -511,7 +511,7 @@ var paoku = {
         return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
     },
     jumpCollisionTest: function (index) {
-        var _this = this;
+        var _this = this;    
         var runnerFooter = _this.runner.position[1] + _this.runner.renderSize[1];
         return _this.successJump = (_this.blockList[index].position[1] < runnerFooter && _this.blockList[index].position[1] > (runnerFooter - _this.blockList[index].renderSize[1]))
     },
