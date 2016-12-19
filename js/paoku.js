@@ -367,11 +367,11 @@ var paoku = {
             lastBlockItem = _this.blockList[lastIndex];
             blockItem = _this.blockList[index];
             //挡住上一个
-            if(_this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
+            if(blockItem.position[1]>lastBlockItem.position[1] && _this.runner.position[1]+_this.runner.renderSize[1]<blockItem.position[1] && _this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
                 _this.runRunnerShadow(ctx);
                 _this.runBlock(ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-
+                _this.notFailJump = true
             }else{
                 //当前block和runner的关系
                 if(_this.successJump) {
@@ -386,7 +386,11 @@ var paoku = {
                         _this.runBlock(ctx);
                     }
                 }else{
-                    _this.fail = true;
+                    //起跳特别早,人压住上一个block,但是落下并不撞上
+                    if(_this.notFailJump != true){
+                        _this.fail = true;
+                        _this.notFailJump = false
+                    }
                     _this.runRunnerShadow(ctx);
                     ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
                     _this.runBlock(ctx);
