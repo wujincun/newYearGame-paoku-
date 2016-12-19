@@ -22,7 +22,7 @@ var paoku = {
     score: 0,//分数
     lastTime: 0,
     totalTime: 3000,
-    runnerTime: 200,
+    runnerTime: 400,
     minBlockSizeM: 1 / 3.5,//最小最大比
     minHouseSizeM: 1 / 3.5,
     maxRunnerSizeM: 1.05,
@@ -232,7 +232,7 @@ var paoku = {
         _this.runner.position = [_this.runner.leftposition,_this.runner.topPosition];
         _this.runner.floor = [_this.runner.centerposition,_this.runner.topPosition + _this.runnerShadow.renderSize[1]*1/2];//???为什么一开始正常，
         _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 200 * h / 1334];
-        _this.runnerSpeed = _this.baseRunnerSpeed = 300 * h / (_this.runnerTime * 1334);
+        _this.runnerSpeed = _this.baseRunnerSpeed = 400 * h / (_this.runnerTime * 1334);
         //小人中心点坐标
         _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
 
@@ -264,7 +264,7 @@ var paoku = {
             }
         }, 1000);
     },
-    run: function (ctx) {
+    run: function (ctx,index) {
         var _this = this;
         var timeGap, seconds;
 
@@ -295,7 +295,7 @@ var paoku = {
             _this.runHouse(ctx);
 
             if (_this.flag) {//跳起
-                _this.jumpRunner(ctx);//画每一帧跳起的小人
+                _this.jumpRunner(ctx,index);//画每一帧跳起的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
             } else {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
@@ -374,7 +374,7 @@ var paoku = {
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
         }
     },
-    jumpRunner: function (ctx) {
+    jumpRunner: function (ctx,index) {
         var _this = this;
         //判断up or down；
         if (!_this.isUp) {
@@ -411,9 +411,16 @@ var paoku = {
             _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
         } else {
-            _this.runRunnerShadow(ctx);
-            ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-            _this.runBlock(ctx);
+            var lastIndex = _this.getIndex();
+            if(lastIndex != index){
+                _this.runBlock(ctx);
+                _this.runRunnerShadow(ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+            }else{
+                _this.runRunnerShadow(ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                _this.runBlock(ctx);
+            }
         }
     },
     runRunnerShadow:function (ctx) {
@@ -474,7 +481,7 @@ var paoku = {
                 _this.flag = true;
                 var index = _this.getIndex();
                 _this.jumpCollisionTest(index);//起跳时判断是否成功
-                _this.run(ctx);
+                _this.run(ctx,index);
             }
             function checkMoveUp(e) {
                 moveX = e.targetTouches[0].pageX;
@@ -489,7 +496,7 @@ var paoku = {
 //碰撞检测
     getIndex: function () {
         var _this = this;
-        _this.successJump = false;
+        _this.successJump =  false;
         var arr = [];
         _this.blockToRunnerA = [];//起跳前每个block到runner的距离的集合
         for (var i = 0; i < _this.blockList.length; i++) {
