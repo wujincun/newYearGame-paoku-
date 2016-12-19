@@ -294,18 +294,19 @@ var paoku = {
             _this.renderBg(ctx);
             _this.runHouse(ctx);
 
+            var index = _this.getIndex();
             if (_this.flag) {//跳起
                 _this.jumpRunner(ctx,index);//画每一帧跳起的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
             } else {
-                _this.runRunner(ctx);//画每一帧奔跑的小人
+                _this.runRunner(ctx,index);//画每一帧奔跑的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
-                if (_this.frameCount % 5 == 0) {
-                    if (_this.collisionTest()) {
+               //if (_this.frameCount % 5 == 0) {
+                    if (_this.collisionTest(index)) {
                         _this.handleCollision();
                         return false;
                     }
-                }
+               // }
             }
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
@@ -358,12 +359,20 @@ var paoku = {
             ctx.drawImage(_this.houseList[i].img, _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
     },
-    runRunner: function (ctx) {
+    runRunner: function (ctx,index) {
         var _this = this;
-        //判断
-        var index = _this.getIndex();
+        //底部重合
+        _this.coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];//应该为起跳的最高点-bS*runnerT
+        _this.collisionLine = _this.coincideStart -  _this.blockSpeed *_this.runnerTime;
+        var nextIndex = index + 1 == 3?0:index+1;
         var blockItem = _this.blockList[index];
+        var nextBlockItem =  _this.blockList[nextIndex];
         var shadowFooter = _this.runnerShadow.position[1] + _this.runnerShadow.renderSize[1];
+        //设置successJump的边界条件
+        if(nextBlockItem.position[1] >= shadowFooter && nextBlockItem.position[1]<= _this.collisionLine + _this.blockToBlockDistance){
+            _this.successJump = false
+        }
+
         if (blockItem.position[1] < shadowFooter && blockItem.position[1] > _this.collisionLine + 20*_this.h/1334 ) {//30随意定的
             _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
@@ -411,8 +420,8 @@ var paoku = {
             _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
         } else {
-            var lastIndex = _this.getIndex();
-            if(lastIndex != index){
+            var nowIndex = _this.getIndex();
+            if(nowIndex != index){
                 _this.runBlock(ctx);
                 _this.runRunnerShadow(ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
@@ -496,7 +505,6 @@ var paoku = {
 //碰撞检测
     getIndex: function () {
         var _this = this;
-        _this.successJump =  false;
         var arr = [];
         _this.blockToRunnerA = [];//起跳前每个block到runner的距离的集合
         for (var i = 0; i < _this.blockList.length; i++) {
@@ -509,13 +517,9 @@ var paoku = {
         }
         return index = _this.blockToRunnerA.indexOf(Math.min.apply(null, arr));
     },
-    collisionTest: function () {
+    collisionTest: function (index) {
         var _this = this;
-        var index = _this.getIndex();
-        //底部重合
-        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];//应该为起跳的最高点-bS*runnerT
-        _this.collisionLine = coincideStart -  _this.blockSpeed *_this.runnerTime;
-        return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
+        return (_this.blockList[index].position[1] <= _this.coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
     },
     jumpCollisionTest: function (index) {
         var _this = this;    
