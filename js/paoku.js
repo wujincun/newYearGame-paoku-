@@ -215,8 +215,9 @@ var paoku = {
         _this.runnerShadow.img.src = './img/game/runnerShadow.png';
         _this.runnerShadow.size = [w * 0.132, w * 0.132 * 32 / 99];//99*32
         _this.runnerShadow.renderSize = [_this.runnerShadow.size[0], _this.runnerShadow.size[1]];
-        _this.runnerShadow.position = [(w-_this.runnerShadow.renderSize[0])/2,760*h/1334];//760量的
-        ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
+        _this.runnerShadow.position = [(w - _this.runnerShadow.renderSize[0]) / 2, 760 * h / 1334];//760量的
+        _this.shadowFooter = _this.runnerShadow.position[1] + _this.runnerShadow.renderSize[1];
+        ctx.drawImage(_this.runnerShadow.img, _this.runnerShadow.position[0], _this.runnerShadow.position[1], _this.runnerShadow.renderSize[0], _this.runnerShadow.renderSize[1])
     },
     renderRunner: function (ctx) {
         var _this = this;
@@ -228,14 +229,14 @@ var paoku = {
         _this.runner.size = [w * 0.22 * 0.95, w * 0.22 * 263 / 165 * 0.95];
         _this.runner.renderSize = [_this.runner.size[0], _this.runner.size[1]];
         _this.runner.leftposition = (w - _this.runner.renderSize[0]) / 2;
-        _this.runner.topPosition = _this.runnerShadow.position[1] - _this.runner.renderSize[1] + _this.runnerShadow.renderSize[1]*1/2;
-        _this.runner.position = [_this.runner.leftposition,_this.runner.topPosition];
-        _this.runner.floor = [_this.runner.centerposition,_this.runner.topPosition + _this.runnerShadow.renderSize[1]*1/2];//???为什么一开始正常，
+        _this.runner.topPosition = _this.runnerShadow.position[1] - _this.runner.renderSize[1] + _this.runnerShadow.renderSize[1] * 1 / 2;
+        _this.runner.position = [_this.runner.leftposition, _this.runner.topPosition];
+        _this.runner.floor = [_this.runner.centerposition, _this.runner.topPosition + _this.runnerShadow.renderSize[1] * 1 / 2];//???为什么一开始正常，
         _this.runner.ceiling = [_this.runner.centerposition, _this.runner.floor[1] - 200 * h / 1334];
         _this.runnerSpeed = _this.baseRunnerSpeed = 400 * h / (_this.runnerTime * 1334);
+        _this.runnerFooter = _this.runner.floor[1]+_this.runner.renderSize[1];
         //小人中心点坐标
         _this.runnerHoriCenterCord = [_this.runner.position[0] + _this.runner.size[0] / 2, _this.runner.position[1] + _this.runner.size[1] / 2];
-
         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
     },
     renderListener: function (ctx) {
@@ -264,7 +265,7 @@ var paoku = {
             }
         }, 1000);
     },
-    run: function (ctx,index) {
+    run: function (ctx, index) {
         var _this = this;
         var timeGap, seconds;
 
@@ -295,16 +296,14 @@ var paoku = {
             _this.runHouse(ctx);
 
             if (_this.flag) {//跳起
-                _this.jumpRunner(ctx,index);//画每一帧跳起的小人
+                _this.jumpRunner(ctx, index);//画每一帧跳起的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
             } else {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
-                if (_this.frameCount % 5 == 0) {
-                    if (_this.collisionTest()) {
-                        _this.handleCollision();
-                        return false;
-                    }
+                if (_this.fail) {
+                    _this.handleCollision();
+                    return false;
                 }
             }
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
@@ -358,23 +357,68 @@ var paoku = {
             ctx.drawImage(_this.houseList[i].img, _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
         }
     },
-    runRunner: function (ctx) {
+    runRunner: function (ctx, index) {
         var _this = this;
         //判断
-        var index = _this.getIndex();
-        var blockItem = _this.blockList[index];
-        var shadowFooter = _this.runnerShadow.position[1] + _this.runnerShadow.renderSize[1];
-        if (blockItem.position[1] < shadowFooter && blockItem.position[1] > _this.collisionLine + 20*_this.h/1334 ) {//30随意定的
-            _this.runRunnerShadow(ctx);
-            ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-            _this.runBlock(ctx);
-        } else {
-            _this.runRunnerShadow(ctx);
-            _this.runBlock(ctx);
-            ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+        var lastIndex,lastBlockItem,blockItem,jumpBlockItem;
+        //跳起情况
+        if(typeof (index) != 'undefined'){
+            lastIndex = index - 1 == -1 ? 2 : index - 1;
+            lastBlockItem = _this.blockList[lastIndex];
+            blockItem = _this.blockList[index];
+            //挡住上一个
+            /*if(lastBlockItem.position[1] + lastBlockItem.renderSize[1] > _this.runner.position[1]){
+                _this.runRunnerShadow(ctx);
+                _this.runBlock(ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+            }*/
+            //当前block和runner的关系
+           if(_this.successJump) {
+               if(blockItem.position[1]</*_this.shadowFooter - blockItem.renderSize[1]*/_this.runnerFooter-_this.blockSpeed * _this.runnerTime){
+                   //_this.fail = false;
+                   _this.runRunnerShadow(ctx);
+                   _this.runBlock(ctx);
+                   ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+               }else {
+                   _this.runRunnerShadow(ctx);
+                   ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                   _this.runBlock(ctx);
+               }
+           }else{
+               _this.fail = true;
+               _this.runRunnerShadow(ctx);
+               ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+               _this.runBlock(ctx);
+           }
+        }else{
+            //跑步状态，判断挡住条件
+            if(_this.index == null){
+                temp = _this.getIndex()
+            }
+            _this.index = _this.getIndex();
+            blockItem = _this.blockList[_this.index];
+            //跳起时的block
+            jumpBlockItem = _this.blockList[temp];
+            //跳起落下
+            if(_this.successJump){
+                _this.runRunnerShadow(ctx);
+                _this.runBlock(ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                if(temp != _this.index && jumpBlockItem.position[1] + jumpBlockItem.renderSize[1]< _this.runner.position[1]){
+                    _this.successJump = false;
+                }
+            }else{
+                //未跳起过
+                if(blockItem.position[1]<_this.runnerFooter - blockItem.renderSize[1]){
+                    _this.fail = true;
+                }
+                _this.runRunnerShadow(ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                _this.runBlock(ctx);
+            }
         }
     },
-    jumpRunner: function (ctx,index) {
+    jumpRunner: function (ctx, index) {
         var _this = this;
         //判断up or down；
         if (!_this.isUp) {
@@ -397,7 +441,6 @@ var paoku = {
                 }
                 _this.isUp = false;
                 _this.flag = false;
-
             } else {
                 _this.runner.position[1] = _this.runner.position[1] + _this.runnerS;
             }
@@ -411,27 +454,18 @@ var paoku = {
             _this.runRunnerShadow(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
         } else {
-            var lastIndex = _this.getIndex();
-            if(lastIndex != index){
-                _this.runBlock(ctx);
-                _this.runRunnerShadow(ctx);
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-            }else{
-                _this.runRunnerShadow(ctx);
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                _this.runBlock(ctx);
-            }
+            _this.runRunner(ctx, index)
         }
     },
-    runRunnerShadow:function (ctx) {
+    runRunnerShadow: function (ctx) {
         var _this = this;
         var w = _this.w;
-        _this.runnerShadow.radio = (_this.runner.ceiling[1] - _this.runner.position[1]) / (_this.runner.ceiling[1]-_this.runner.floor[1]);
-        _this.runnerShadow.radio= _this.runnerShadow.radio?_this.runnerShadow.radio:1;
+        _this.runnerShadow.radio = (_this.runner.ceiling[1] - _this.runner.position[1]) / (_this.runner.ceiling[1] - _this.runner.floor[1]);
+        _this.runnerShadow.radio = _this.runnerShadow.radio ? _this.runnerShadow.radio : 1;
         _this.runnerShadow.shadowSizeRadio = _this.runnerShadow.radio * (1 - _this.minShadowSizeM) + _this.minShadowSizeM;
         _this.runnerShadow.renderSize = [_this.runnerShadow.size[0] * _this.runnerShadow.shadowSizeRadio, _this.runnerShadow.size[1] * _this.runnerShadow.shadowSizeRadio];
-        _this.runnerShadow.position = [(w-_this.runnerShadow.renderSize[0])/2,_this.runnerShadow.position[1]];//740量的
-        ctx.drawImage(_this.runnerShadow.img,_this.runnerShadow.position[0],_this.runnerShadow.position[1],_this.runnerShadow.renderSize[0],_this.runnerShadow.renderSize[1])
+        _this.runnerShadow.position = [(w - _this.runnerShadow.renderSize[0]) / 2, _this.runnerShadow.position[1]];//740量的
+        ctx.drawImage(_this.runnerShadow.img, _this.runnerShadow.position[0], _this.runnerShadow.position[1], _this.runnerShadow.renderSize[0], _this.runnerShadow.renderSize[1])
     },
     bind: function (ctx) {
         var _this = this;
@@ -473,6 +507,7 @@ var paoku = {
             e.preventDefault();
             moveY = initY = e.targetTouches[0].pageY;
             moveX = initX = e.targetTouches[0].pageX;
+            _this.index = null;
         }
 
         function canvasTouchMove(e) {
@@ -480,8 +515,9 @@ var paoku = {
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
                 _this.flag = true;
                 var index = _this.getIndex();
-                _this.jumpCollisionTest(index);//起跳时判断是否成功
-                _this.run(ctx,index);
+                //_this.jumpCollisionTest(index);//起跳时判断是否成功
+                _this.successJump = (_this.blockList[index].position[1] < _this.shadowFooter && _this.blockList[index].position[1] > (_this.shadowFooter - _this.blockList[index].renderSize[1]));
+                _this.run(ctx, index);
             }
             function checkMoveUp(e) {
                 moveX = e.targetTouches[0].pageX;
@@ -496,7 +532,6 @@ var paoku = {
 //碰撞检测
     getIndex: function () {
         var _this = this;
-        _this.successJump =  false;
         var arr = [];
         _this.blockToRunnerA = [];//起跳前每个block到runner的距离的集合
         for (var i = 0; i < _this.blockList.length; i++) {
@@ -509,14 +544,11 @@ var paoku = {
         }
         return index = _this.blockToRunnerA.indexOf(Math.min.apply(null, arr));
     },
-    collisionTest: function () {
+   /* collisionTest: function () {
         var _this = this;
         var index = _this.getIndex();
-        //底部重合
-        var coincideStart = _this.runner.position[1] + _this.runner.renderSize[1] - _this.blockList[index].renderSize[1];//应该为起跳的最高点-bS*runnerT
-        _this.collisionLine = coincideStart -  _this.blockSpeed *_this.runnerTime;
         return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
-    },
+    },*/
     jumpCollisionTest: function (index) {
         var _this = this;
         var runnerFooter = _this.runner.position[1] + _this.runner.renderSize[1];
