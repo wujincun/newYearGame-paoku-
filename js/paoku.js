@@ -367,24 +367,32 @@ var paoku = {
             lastBlockItem = _this.blockList[lastIndex];
             blockItem = _this.blockList[index];
             //挡住上一个
+            if(_this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
+                _this.runRunnerShadow(ctx);
+                _this.runBlock(ctx);
+                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+
+            }else{
                 //当前block和runner的关系
-            if(_this.successJump) {
-                if(blockItem.position[1]</*_this.shadowFooter - blockItem.renderSize[1]*/_this.runnerFooter-_this.blockSpeed * _this.runnerTime){
-                    //_this.fail = false;
-                    _this.runRunnerShadow(ctx);
-                    _this.runBlock(ctx);
-                    ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                }else {
+                if(_this.successJump) {
+                    if(blockItem.position[1]</*_this.shadowFooter - blockItem.renderSize[1]*/_this.runnerFooter-_this.blockSpeed * _this.runnerTime){
+                        //_this.fail = false;
+                        _this.runRunnerShadow(ctx);
+                        _this.runBlock(ctx);
+                        ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                    }else {
+                        _this.runRunnerShadow(ctx);
+                        ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                        _this.runBlock(ctx);
+                    }
+                }else{
+                    _this.fail = true;
                     _this.runRunnerShadow(ctx);
                     ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
                     _this.runBlock(ctx);
                 }
-            }else{
-                _this.fail = true;
-                _this.runRunnerShadow(ctx);
-                ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                _this.runBlock(ctx);
             }
+
         }else{
             //跑步状态，判断挡住条件
             if(_this.index == null){
