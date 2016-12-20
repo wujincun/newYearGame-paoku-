@@ -8,6 +8,7 @@
 var paoku = {
     $score: $('#score'),
     $time: $('#time'),
+    $jumpHint : $('#jumpHint'),
     w: $(window).width(),
     h: $(window).height(),
     runner: {},//人
@@ -16,6 +17,8 @@ var paoku = {
     blockList: [],//障碍物的数组集合
     frameCount: 0,//每一帧的计算
     isInit: false,
+    hintInit:false,//第一次到block显示提示
+    hintFlag:false,//提示出现时停止动画
     rafId: '',//动画的id
     flag: false,//标志是否跳起 true为跳起
     isUp: false,//是否向上跳
@@ -31,7 +34,7 @@ var paoku = {
     houseS: 0,
 
     API: {
-        getResult: './mock/getResult.json'
+        getResult: '/ajax/aj_activity170101.php'
     },
     init: function () {
         var _this = this;
@@ -118,10 +121,10 @@ var paoku = {
         var w = _this.w;
         var h = _this.h;
         _this.blockSize = [w * 0.5, w * 0.5 * 159 / 376];
-        _this.blockToBlockDistance = h * 350 / 1334;
-        _this.endToBlockDistance = h * 480 / 1334;
-        _this.blockDisappearDistance = h * 370 / 1334;
-        _this.startToEndBlockDistance = h * (1334 - 370 - 160) / 1334;
+        _this.blockToBlockDistance = h * 400 / 1334;
+        _this.endToBlockDistance = h * 370 / 1334;
+        _this.blockDisappearDistance = h * 360 / 1334;
+        _this.startToEndBlockDistance = h * (1334 - 360 - 160) / 1334;
         var blockDistance = _this.endToBlockDistance;
         _this.blockSpeed = _this.baseBlockSpeed = _this.startToEndBlockDistance / _this.totalTime;//S:h*(1334-370)/1334;t=3000ms;1s60帧，则一帧的速度？？？
         //初始化的障碍物
@@ -215,7 +218,7 @@ var paoku = {
         _this.runnerShadow.img.src = './img/game/runnerShadow.png';
         _this.runnerShadow.size = [w * 0.132, w * 0.132 * 32 / 99];//99*32
         _this.runnerShadow.renderSize = [_this.runnerShadow.size[0], _this.runnerShadow.size[1]];
-        _this.runnerShadow.position = [(w - _this.runnerShadow.renderSize[0]) / 2, 760 * h / 1334];//760量的
+        _this.runnerShadow.position = [(w - _this.runnerShadow.renderSize[0]) / 2, 650 * h / 1334];//760量的
         _this.shadowFooter = _this.runnerShadow.position[1] + _this.runnerShadow.renderSize[1];
         ctx.drawImage(_this.runnerShadow.img, _this.runnerShadow.position[0], _this.runnerShadow.position[1], _this.runnerShadow.renderSize[0], _this.runnerShadow.renderSize[1])
     },
@@ -242,7 +245,6 @@ var paoku = {
     renderListener: function (ctx) {
         var _this = this;
         var $countTime = $('#countTime');
-        var $jumpHint = $('#jumpHint');
 
         var readyCountNum = 3;
         var readyCountTimer = setInterval(function () {
@@ -250,8 +252,11 @@ var paoku = {
             if (readyCountNum == 0) {
                 clearInterval(readyCountTimer);
                 $countTime.hide();
+                _this.initTime = _this.initRadioTime = Date.now();
+                _this.run(ctx); //跑
+                _this.bind(ctx);
                 //提示上跳
-                $jumpHint.show();
+                /*$jumpHint.show();
                 $jumpHint.on('touchstart', function (e) {
                     e.preventDefault();
                     $jumpHint.hide();
@@ -259,7 +264,7 @@ var paoku = {
                     _this.initTime = _this.initRadioTime = Date.now();
                     _this.run(ctx); //跑
                     _this.bind(ctx);
-                });
+                });*/
             } else {
                 $('#num ').attr('class', 'num_' + readyCountNum);
             }
@@ -300,7 +305,11 @@ var paoku = {
                 _this.rafId = window.requestAnimationFrame(animateRun);
             } else {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
-                _this.rafId = window.requestAnimationFrame(animateRun);
+                if(_this.hintFlag){
+                    window.cancelAnimationFrame(_this.rafId)
+                }else{
+                    _this.rafId = window.requestAnimationFrame(animateRun);
+                }
                 if (_this.fail) {
                     _this.handleCollision();
                     return false;
@@ -419,6 +428,13 @@ var paoku = {
                 if(blockItem.position[1]<_this.runnerFooter - blockItem.renderSize[1]){
                     _this.fail = true;
                 }
+                if(!_this.hintInit){
+                    if(blockItem.position[1]<_this.runnerFooter){
+                        _this.$jumpHint.show();
+                        _this.hintInit = true;
+                        _this.hintFlag = true
+                    }
+                }
                 _this.runRunnerShadow(ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
                 _this.runBlock(ctx);
@@ -496,9 +512,11 @@ var paoku = {
                 url: _this.API.getResult,
                 type: 'GET',
                 dataType: 'json',
-                data: {}
+                data: {
+                    score:_this.score
+                }
             }).done(function (data) {
-                $resultPopContainer.css('display', '-webkit-box');
+                $resultPopContainer.show();
                 $gamePopContainer.hide();
                 if (data.code == 200) {
                     $getCouponPop.show();
@@ -518,6 +536,11 @@ var paoku = {
         }
 
         function canvasTouchMove(e) {
+            if(_this.hintFlag){
+                _this.$jumpHint.hide();
+                _this.successJump = true;
+                _this.hintFlag = false;
+            }
             e.preventDefault();
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
                 _this.flag = true;
@@ -556,11 +579,11 @@ var paoku = {
         var index = _this.getIndex();
         return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
     },*/
-    jumpCollisionTest: function (index) {
+    /*jumpCollisionTest: function (index) {
         var _this = this;
         var runnerFooter = _this.runner.position[1] + _this.runner.renderSize[1];
         return _this.successJump = (_this.blockList[index].position[1] < runnerFooter && _this.blockList[index].position[1] > (runnerFooter - _this.blockList[index].renderSize[1]))
-    },
+    },*/
     handleCollision: function () {
         var _this = this;
         window.cancelAnimationFrame(_this.rafId);
@@ -571,13 +594,16 @@ var paoku = {
         var $gamePopContainer = $('#gamePopContainer');
         var $successPop = $gamePopContainer.find('.successPop');
         var $failPop = $gamePopContainer.find('.failPop');
-        //$gamePopContainer.css('display', '-webkit-box');
+        $gamePopContainer.show();
         if (_this.score >= 50) {
             $successPop.show();
+            $successPop.find('.num').text(_this.score/10);
+            $successPop.find('.score').text(_this.score);
             $failPop.hide()
         } else {
+            $failPop.show();
+            $failPop.find('.score').text(_this.score);
             $successPop.hide();
-            $failPop.show()
         }
         /*canvas.removeEventListener('touchstart', this.handleTouchStart, true);//解绑
          canvas.removeEventListener('touchmove', this.handleTouchMove, true)*/
