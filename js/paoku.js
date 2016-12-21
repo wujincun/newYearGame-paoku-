@@ -270,12 +270,12 @@ var paoku = {
             //位移
             var curTime = Date.now();
             if (_this.lastTime > 0) {
-                /*_this.blockS = _this.blockSpeed * 17;
+                _this.blockS = _this.blockSpeed * 17;
                 _this.houseS = _this.houseSpeed * 17;
-                _this.runnerS = _this.runnerSpeed * 17*/
-                _this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
+                _this.runnerS = _this.runnerSpeed * 17
+               /* _this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
                  _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
-                 _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)
+                 _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)*/
             }
             _this.lastTime = curTime;
             //画
@@ -361,7 +361,7 @@ var paoku = {
             lastIndex = index - 1 == -1 ? 2 : index - 1;
             lastBlockItem = _this.blockList[lastIndex];
             blockItem = _this.blockList[index];
-            //挡住上一个
+            //挡住上一个,判断跳起时blockItem的中心在小人上半部还是下半部？
             if(blockItem.position[1]>lastBlockItem.position[1] && _this.runnerFooter<blockItem.position[1] && _this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
                 _this.runRunnerShadow(ctx);
                 _this.runBlock(ctx);
@@ -388,6 +388,21 @@ var paoku = {
                     _this.runRunnerShadow(ctx);
                     ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
                     _this.runBlock(ctx);
+                    /*if(_this.notFailJump != true){
+                        _this.fail = true;
+                        _this.notFailJump = false;
+
+                    }
+                        //起跳挡住
+                    if(blockItem.position[1]+blockItem.renderSize[1] <_this.runnerFooter && blockItem.position[1]>_this.runner.position[1]){
+                        _this.runRunnerShadow(ctx);
+                        _this.runBlock(ctx);
+                        ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                    }else{
+                        _this.runRunnerShadow(ctx);
+                        ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
+                        _this.runBlock(ctx);
+                    }*/
                 }
             }
         }else{
@@ -487,8 +502,35 @@ var paoku = {
         var $couponMoneyNum = $getCouponPop.find('.couponMoneyNum');
         var $noCouponPop = $resultPopContainer.find('.noCouponPop');
 
-        canvas.addEventListener('touchstart', canvasTouchStart);
-        canvas.addEventListener('touchmove', canvasTouchMove);
+        canvas.addEventListener('touchstart', function(e){
+            e.preventDefault();
+            moveY = initY = e.targetTouches[0].pageY;
+            moveX = initX = e.targetTouches[0].pageX;
+            _this.index = null;
+        });
+        canvas.addEventListener('touchmove', function (e) {
+            if(_this.hintFlag){
+                _this.$jumpHint.hide();
+                _this.successJump = true;
+                _this.hintFlag = false;
+                _this.lastTime = 0;
+                _this.pauseTime = Date.now() - _this.pauseTimeStart;
+            }
+            e.preventDefault();
+            if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
+                _this.flag = true;
+                var index = _this.getIndex();
+                _this.successJump = (_this.blockList[index].position[1] < _this.shadowFooter && _this.blockList[index].position[1] > (_this.shadowFooter - _this.blockList[index].renderSize[1]));
+                _this.run(ctx, index);
+            }
+            function checkMoveUp(e) {
+                moveX = e.targetTouches[0].pageX;
+                moveY = e.targetTouches[0].pageY;
+                distanceX = moveX - initX;
+                distanceY = moveY - initY;
+                return (Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30);//判断向上滑
+            }
+        });
         $popContainer.on('touchstart', '.close', function () {
             $popContainer.hide();
             window.location.href = "newYearH5.html"
@@ -514,39 +556,7 @@ var paoku = {
                 }
             })
         });
-        function canvasTouchStart(e) {
-            e.preventDefault();
-            moveY = initY = e.targetTouches[0].pageY;
-            moveX = initX = e.targetTouches[0].pageX;
-            _this.index = null;
-        }
-
-        function canvasTouchMove(e) {
-            if(_this.hintFlag){
-                _this.$jumpHint.hide();
-                _this.successJump = true;
-                _this.hintFlag = false;
-                _this.lastTime = 0;
-                _this.pauseTime = Date.now() - _this.pauseTimeStart;
-            }
-            e.preventDefault();
-            if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
-                _this.flag = true;
-                var index = _this.getIndex();
-                _this.successJump = (_this.blockList[index].position[1] < _this.shadowFooter && _this.blockList[index].position[1] > (_this.shadowFooter - _this.blockList[index].renderSize[1]));
-                _this.run(ctx, index);
-            }
-            function checkMoveUp(e) {
-                moveX = e.targetTouches[0].pageX;
-                moveY = e.targetTouches[0].pageY;
-                distanceX = moveX - initX;
-                distanceY = moveY - initY;
-                return (Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30);//判断向上滑
-            }
-        }
     },
-
-//碰撞检测
     getIndex: function () {
         var _this = this;
         var arr = [];
