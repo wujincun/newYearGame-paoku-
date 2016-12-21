@@ -370,8 +370,7 @@ var paoku = {
             }else{
                 //当前block和runner的关系
                 if(_this.successJump) {
-                    if(blockItem.position[1]</*_this.shadowFooter - blockItem.renderSize[1]*/_this.runnerFooter-_this.blockSpeed * _this.runnerTime){
-                        //_this.fail = false;
+                    if(blockItem.position[1]<_this.runnerFooter-_this.blockSpeed * _this.runnerTime){
                         _this.runRunnerShadow(ctx);
                         _this.runBlock(ctx);
                         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
