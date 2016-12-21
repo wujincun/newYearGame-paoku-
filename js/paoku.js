@@ -1,10 +1,6 @@
 /**
  * Created by Administrator on 2016/12/5.
  */
-/**
- * Created by Administrator on 2016/11/16.
- */
-
 var paoku = {
     $score: $('#score'),
     $time: $('#time'),
@@ -19,6 +15,7 @@ var paoku = {
     isInit: false,
     hintInit:false,//第一次到block显示提示
     hintFlag:false,//提示出现时停止动画
+    notFailJump:true,//起跳过早并不失败
     rafId: '',//动画的id
     flag: false,//标志是否跳起 true为跳起
     isUp: false,//是否向上跳
@@ -245,7 +242,6 @@ var paoku = {
     renderListener: function (ctx) {
         var _this = this;
         var $countTime = $('#countTime');
-
         var readyCountNum = 3;
         var readyCountTimer = setInterval(function () {
             readyCountNum--;
@@ -255,16 +251,6 @@ var paoku = {
                 _this.initTime = _this.initRadioTime = Date.now();
                 _this.run(ctx); //跑
                 _this.bind(ctx);
-                //提示上跳
-                /*$jumpHint.show();
-                $jumpHint.on('touchstart', function (e) {
-                    e.preventDefault();
-                    $jumpHint.hide();
-
-                    _this.initTime = _this.initRadioTime = Date.now();
-                    _this.run(ctx); //跑
-                    _this.bind(ctx);
-                });*/
             } else {
                 $('#num ').attr('class', 'num_' + readyCountNum);
             }
@@ -280,16 +266,15 @@ var paoku = {
             timeGap = Date.now() - _this.initTime;
             seconds = Math.round(timeGap / 10);
             _this.$time.text(seconds / 100 + 's');
-
             //位移
             var curTime = Date.now();
             if (_this.lastTime > 0) {
-                _this.blockS = _this.blockSpeed * 15;
-                _this.houseS = _this.houseSpeed * 15;
-                _this.runnerS = _this.runnerSpeed * 15
-                /*_this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
+                /*_this.blockS = _this.blockSpeed * 17;
+                _this.houseS = _this.houseSpeed * 17;
+                _this.runnerS = _this.runnerSpeed * 17*/
+                _this.blockS = _this.blockSpeed * (curTime - _this.lastTime);
                  _this.houseS = _this.houseSpeed * (curTime - _this.lastTime);
-                 _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)*/
+                 _this.runnerS = _this.runnerSpeed * (curTime - _this.lastTime)
             }
             _this.lastTime = curTime;
             //画
@@ -376,7 +361,7 @@ var paoku = {
             lastBlockItem = _this.blockList[lastIndex];
             blockItem = _this.blockList[index];
             //挡住上一个
-            if(blockItem.position[1]>lastBlockItem.position[1] && _this.runner.position[1]+_this.runner.renderSize[1]<blockItem.position[1] && _this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
+            if(blockItem.position[1]>lastBlockItem.position[1] && _this.runnerFooter<blockItem.position[1] && _this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
                 _this.runRunnerShadow(ctx);
                 _this.runBlock(ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
@@ -405,22 +390,21 @@ var paoku = {
                     _this.runBlock(ctx);
                 }
             }
-
         }else{
             //跑步状态，判断挡住条件
             if(_this.index == null){
-                temp = _this.getIndex()
+                _this.temp = _this.getIndex()
             }
             _this.index = _this.getIndex();
             blockItem = _this.blockList[_this.index];
             //跳起时的block
-            jumpBlockItem = _this.blockList[temp];
+            jumpBlockItem = _this.blockList[_this.temp];
             //跳起落下
             if(_this.successJump){
                 _this.runRunnerShadow(ctx);
                 _this.runBlock(ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                if(temp != _this.index && jumpBlockItem.position[1] + jumpBlockItem.renderSize[1]< _this.runner.position[1]){
+                if(_this.temp != _this.index && (jumpBlockItem.position[1] + jumpBlockItem.renderSize[1]) < _this.runner.position[1] || jumpBlockItem.position[1]>_this.h){
                     _this.successJump = false;
                 }
             }else{
@@ -431,6 +415,7 @@ var paoku = {
                 if(!_this.hintInit){
                     if(blockItem.position[1]<_this.runnerFooter){
                         _this.$jumpHint.show();
+                        _this.lastTime =
                         _this.hintInit = true;
                         _this.hintFlag = true
                     }
@@ -540,12 +525,12 @@ var paoku = {
                 _this.$jumpHint.hide();
                 _this.successJump = true;
                 _this.hintFlag = false;
+                _this.lastTime = 0
             }
             e.preventDefault();
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
                 _this.flag = true;
                 var index = _this.getIndex();
-                //_this.jumpCollisionTest(index);//起跳时判断是否成功
                 _this.successJump = (_this.blockList[index].position[1] < _this.shadowFooter && _this.blockList[index].position[1] > (_this.shadowFooter - _this.blockList[index].renderSize[1]));
                 _this.run(ctx, index);
             }
@@ -566,7 +551,7 @@ var paoku = {
         _this.blockToRunnerA = [];//起跳前每个block到runner的距离的集合
         for (var i = 0; i < _this.blockList.length; i++) {
             var blockItem = _this.blockList[i];
-            var blockToRunner = blockItem.position[1] - _this.runner.position[1];
+            var blockToRunner = (blockItem.position[1]+blockItem.renderSize[1]/2) - (_this.runner.position[1]+_this.runner.renderSize[1]/2);
             _this.blockToRunnerA.push(blockToRunner);
             if (blockToRunner >= 0) {
                 arr.push(blockToRunner)
@@ -574,16 +559,6 @@ var paoku = {
         }
         return index = _this.blockToRunnerA.indexOf(Math.min.apply(null, arr));
     },
-   /* collisionTest: function () {
-        var _this = this;
-        var index = _this.getIndex();
-        return (_this.blockList[index].position[1] <= coincideStart && _this.blockList[index].position[1] >= _this.collisionLine )//30自定
-    },*/
-    /*jumpCollisionTest: function (index) {
-        var _this = this;
-        var runnerFooter = _this.runner.position[1] + _this.runner.renderSize[1];
-        return _this.successJump = (_this.blockList[index].position[1] < runnerFooter && _this.blockList[index].position[1] > (runnerFooter - _this.blockList[index].renderSize[1]))
-    },*/
     handleCollision: function () {
         var _this = this;
         window.cancelAnimationFrame(_this.rafId);
