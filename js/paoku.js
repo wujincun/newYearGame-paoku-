@@ -582,8 +582,6 @@ var paoku = {
             $failPop.find('.score').text(_this.score);
             $successPop.hide();
         }
-        /*canvas.removeEventListener('touchstart', this.handleTouchStart, true);//解绑
-         canvas.removeEventListener('touchmove', this.handleTouchMove, true)*/
     },
     changeSpeed: function () {
         var _this = this;
