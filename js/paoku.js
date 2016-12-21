@@ -21,6 +21,7 @@ var paoku = {
     isUp: false,//是否向上跳
     score: 0,//分数
     lastTime: 0,
+    pauseTime:0,//提示遮罩出现暂停的时间
     totalTime: 3000,
     runnerTime: 400,
     minBlockSizeM: 1 / 3.5,//最小最大比
@@ -263,7 +264,7 @@ var paoku = {
         function animateRun() {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
             //计时
-            timeGap = Date.now() - _this.initTime;
+            timeGap = Date.now() - _this.initTime - _this.pauseTime;
             seconds = Math.round(timeGap / 10);
             _this.$time.text(seconds / 100 + 's');
             //位移
@@ -415,9 +416,9 @@ var paoku = {
                 if(!_this.hintInit){
                     if(blockItem.position[1]<_this.runnerFooter){
                         _this.$jumpHint.show();
-                        _this.lastTime =
                         _this.hintInit = true;
-                        _this.hintFlag = true
+                        _this.hintFlag = true;
+                        _this.pauseTimeStart = Date.now();
                     }
                 }
                 _this.runRunnerShadow(ctx);
@@ -490,7 +491,8 @@ var paoku = {
         canvas.addEventListener('touchstart', canvasTouchStart);
         canvas.addEventListener('touchmove', canvasTouchMove);
         $popContainer.on('touchstart', '.close', function () {
-            $popContainer.hide()
+            $popContainer.hide();
+            window.location.href = "newYearH5.html"
         });
         $successPop.on('touchstart', '.couponBag', function () {
             $.ajax({
@@ -525,7 +527,8 @@ var paoku = {
                 _this.$jumpHint.hide();
                 _this.successJump = true;
                 _this.hintFlag = false;
-                _this.lastTime = 0
+                _this.lastTime = 0;
+                _this.pauseTime = Date.now() - _this.pauseTimeStart;
             }
             e.preventDefault();
             if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
