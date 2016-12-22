@@ -361,8 +361,8 @@ var paoku = {
             lastIndex = index - 1 == -1 ? 2 : index - 1;
             lastBlockItem = _this.blockList[lastIndex];
             blockItem = _this.blockList[index];
-            //挡住上一个,判断跳起时blockItem的中心在小人上半部还是下半部？
-            if(blockItem.position[1]>lastBlockItem.position[1] && _this.runnerFooter<blockItem.position[1] && _this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]){
+            //挡住上一个,判断跳起时blockItem的中心在小人上半部还是下半部？或者挡住当前（当前认为已经跳过）
+            if((blockItem.position[1]>lastBlockItem.position[1] && _this.runnerFooter<blockItem.position[1] && _this.runner.position[1] <= lastBlockItem.position[1]+lastBlockItem.renderSize[1]) ||(blockItem.position[1] + blockItem.renderSize[1] <= _this.runnerFooter && blockItem.position[1] + blockItem.renderSize[1]/2 > _this.runner.position[1]+_this.runner.renderSize[1]/2)){
                 _this.runRunnerShadow(ctx);
                 _this.runBlock(ctx);
                 ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
@@ -385,16 +385,7 @@ var paoku = {
                         _this.fail = true;
                         _this.notFailJump = false
                     }
-                    _this.runRunnerShadow(ctx);
-                    ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
-                    _this.runBlock(ctx);
-                    /*if(_this.notFailJump != true){
-                        _this.fail = true;
-                        _this.notFailJump = false;
-
-                    }
-                        //起跳挡住
-                    if(blockItem.position[1]+blockItem.renderSize[1] <_this.runnerFooter && blockItem.position[1]>_this.runner.position[1]){
+                    if(lastBlockItem.position[1] >_this.h && blockItem.position[1] + blockItem.renderSize[1] < _this.runnerFooter && blockItem.position[1] + blockItem.renderSize[1]/2 > _this.runner.position[1]+_this.runner.renderSize[1]/2){
                         _this.runRunnerShadow(ctx);
                         _this.runBlock(ctx);
                         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
@@ -402,7 +393,7 @@ var paoku = {
                         _this.runRunnerShadow(ctx);
                         ctx.drawImage(_this.runner.img, _this.runner.position[0], _this.runner.position[1], _this.runner.renderSize[0], _this.runner.renderSize[1]);
                         _this.runBlock(ctx);
-                    }*/
+                    }
                 }
             }
         }else{
