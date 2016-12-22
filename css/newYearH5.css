@@ -1,0 +1,353 @@
+body,
+ul,
+ol,
+li,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fildset,
+table,
+td,
+img,
+div,
+dl,
+dt,
+dd,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+img {
+  border: none;
+}
+ul,
+ol {
+  list-style: none;
+}
+input,
+select,
+textarea {
+  outline: none;
+}
+textarea {
+  resize: none;
+}
+a {
+  text-decoration: none;
+}
+/*清浮动*/
+.clearfix:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+@-webkit-keyframes flipover-top {
+  0% {
+    z-index: 8;
+    -webkit-transform: rotateX(0);
+    transform: rotateX(0);
+  }
+  50% {
+    z-index: 8;
+    -webkit-transform: rotateX(-90deg);
+    transform: rotateX(-90deg);
+  }
+  51% {
+    z-index: 7;
+    opacity: 1;
+  }
+  100% {
+    z-index: 7;
+    opacity: 0;
+    -webkit-transform: rotateX(-180deg);
+    transform: rotateX(-180deg);
+  }
+}
+@-webkit-keyframes flipover-top {
+  0% {
+    z-index: 8;
+    -webkit-transform: rotateX(0);
+    transform: rotateX(0);
+  }
+  50% {
+    z-index: 8;
+    -webkit-transform: rotateX(-90deg);
+    transform: rotateX(-90deg);
+  }
+  51% {
+    z-index: 7;
+    opacity: 1;
+  }
+  100% {
+    z-index: 7;
+    opacity: 0;
+    -webkit-transform: rotateX(-180deg);
+    transform: rotateX(-180deg);
+  }
+}
+@keyframes flipover-top {
+  0% {
+    z-index: 8;
+    -webkit-transform: rotateX(0);
+    transform: rotateX(0);
+  }
+  50% {
+    z-index: 8;
+    -webkit-transform: rotateX(-90deg);
+    transform: rotateX(-90deg);
+  }
+  51% {
+    z-index: 7;
+    opacity: 1;
+  }
+  100% {
+    z-index: 7;
+    opacity: 0;
+    -webkit-transform: rotateX(-180deg);
+    transform: rotateX(-180deg);
+  }
+}
+@-webkit-keyframes flipover-bottom {
+  0% {
+    z-index: 7;
+    -webkit-transform: rotateX(180deg);
+    transform: rotateX(180deg);
+  }
+  50% {
+    z-index: 7;
+    -webkit-transform: rotateX(90deg);
+    transform: rotateX(90deg);
+  }
+  51% {
+    z-index: 8;
+  }
+  100% {
+    z-index: 8;
+    -webkit-transform: rotateX(0);
+    transform: rotateX(0);
+  }
+}
+@keyframes flipover-bottom {
+  0% {
+    z-index: 7;
+    -webkit-transform: rotateX(180deg);
+    transform: rotateX(180deg);
+  }
+  50% {
+    z-index: 7;
+    -webkit-transform: rotateX(90deg);
+    transform: rotateX(90deg);
+  }
+  51% {
+    z-index: 8;
+  }
+  100% {
+    z-index: 8;
+    -webkit-transform: rotateX(0);
+    transform: rotateX(0);
+  }
+}
+.newYearWrap .part {
+  width: 100%;
+  margin-top: -0.02rem;
+}
+.newYearWrap .part .theme {
+  display: block;
+  width: 2.8267rem;
+  margin: 0 1.08rem 0.52rem;
+  overflow: hidden;
+}
+.newYearWrap .part .theme img {
+  width: 7.7866rem;
+}
+.newYearWrap .part .theme.active {
+  width: 7.84rem;
+  -webkit-transition: width 2s;
+  transition: width 2s;
+}
+.newYearWrap .part .rightWrap .theme {
+  position: relative;
+  height: 2.51rem;
+}
+.newYearWrap .part .rightWrap .theme img {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.newYearWrap .part1 {
+  background: url("../img/h5/newYearH5_01.jpg") left center no-repeat;
+  height: 6.2933rem;
+  background-size: contain;
+}
+.newYearWrap .part1 .calender {
+  position: absolute;
+  top: 1.5rem;
+  left: 5rem;
+}
+.newYearWrap .part1 .calender .cTop,
+.newYearWrap .part1 .calender .cBottom {
+  width: 1.2533rem;
+  height: 0.5333rem;
+  position: absolute;
+  left: 0;
+  background-repeat: no-repeat;
+  -webkit-transform-style: preserve-3d;
+}
+.newYearWrap .part1 .calender .cTop {
+  top: 0;
+  background-position: center 0;
+  -webkit-transform-origin: center bottom;
+  transform-origin: center bottom;
+}
+.newYearWrap .part1 .calender .cBottom {
+  top: 0.5333rem;
+  background-position: center -0.5333rem;
+  -webkit-transform-origin: center top;
+  transform-origin: center top;
+}
+.newYearWrap .part1 .calender .old .cTop,
+.newYearWrap .part1 .calender .old .cBottom {
+  z-index: 2;
+  background-image: url(../img/h5/calender1_03.png);
+  background-size: cover;
+}
+.newYearWrap .part1 .calender .new .cTop,
+.newYearWrap .part1 .calender .new .cBottom {
+  z-index: 1;
+  background-image: url(../img/h5/calender2_03.png);
+  background-size: cover;
+}
+.newYearWrap .part1 .calender .old .cTop {
+  -webkit-animation: flipover-top 0.8s linear 0.5s 1 normal forwards;
+  animation: flipover-top 0.8s linear 0.5s 1 normal forwards;
+}
+.newYearWrap .part1 .calender .new .cBottom {
+  -webkit-animation: flipover-bottom 0.8s linear 0.5s 1 normal forwards;
+  animation: flipover-bottom 0.8s linear 0.5s 1 normal forwards;
+}
+.newYearWrap .part1 .newYearTitle {
+  padding: 2.7rem 0 0 1.5333rem;
+}
+.newYearWrap .part1 .newYearTitle img {
+  -webkit-transform: scale(0);
+  transform: scale(0);
+  width: 6.8267rem;
+}
+.newYearWrap .part1 .newYearTitle img.active {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+  -webkit-transition: -webkit-transform 2s 0.8s;
+  transition: -webkit-transform 2s 0.8s;
+  transition: transform 2s 0.8s ;
+  transition: transform 2s 0.8s, -webkit-transform 2s 0.8s;
+}
+.newYearWrap .part2 {
+  background: url("../img/h5/newYearH5_02.jpg") left center no-repeat;
+  height: 6.8133rem;
+  background-size: contain;
+  position: relative;
+}
+.newYearWrap .part2 .rule {
+  position: absolute;
+  left: 0;
+  bottom: 0.36rem;
+  width: 2.573rem;
+  height: 2.05333rem;
+}
+.newYearWrap .part2 .toGame {
+  width: 6.4667rem;
+  height: 3.2667rem;
+  position: absolute;
+  right: 0;
+  bottom: 0.5067rem;
+  overflow: hidden;
+}
+.newYearWrap .part2 .toGame .toGameText {
+  background: url("../img/h5/gameBtn_03.png") left center no-repeat;
+  background-size: contain;
+  width: 4.5467rem;
+  height: 3.2667rem;
+  -webkit-transform: translateX(4.5467rem);
+  transform: translateX(4.5467rem);
+}
+.newYearWrap .part2 .toGame .toGameText.active {
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  -webkit-transition: -webkit-transform 2s 2s;
+  transition: -webkit-transform 2s 2s;
+  transition: transform 2s 2s;
+  transition: transform 2s 2s, -webkit-transform 2s 2s;
+}
+.newYearWrap .part2 .toGame .toGameChild {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: url("../img/h5/gameChild_03.png") left center no-repeat;
+  background-size: contain;
+  height: 3.2667rem;
+  width: 2.4533rem;
+}
+.newYearWrap .part3 {
+  background: url("../img/h5/newYearH5_03.jpg") left center no-repeat;
+  height: 4.5867rem;
+  background-size: contain;
+}
+.newYearWrap .part4 {
+  background: url("../img/h5/newYearH5_04.jpg") left center no-repeat;
+  height: 8.013rem;
+  background-size: contain;
+}
+.newYearWrap .part5 {
+  background: url("../img/h5/newYearH5_05.jpg") left center no-repeat;
+  height: 8.4rem;
+  background-size: contain;
+}
+.newYearWrap .part6 {
+  background: url("../img/h5/newYearH5_06.jpg") left center no-repeat;
+  height: 8.28rem;
+  background-size: contain;
+}
+.newYearWrap .part7 {
+  background: url("../img/h5/newYearH5_07.jpg") left center no-repeat;
+  height: 5.6133rem;
+  background-size: contain;
+}
+.ruleWrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  display: none;
+}
+.ruleWrap .ruleArea {
+  background: url("../img/h5/rule_03.png") left center no-repeat;
+  height: 15.24rem;
+  width: 8.6533rem;
+  background-size: contain;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.ruleWrap .close {
+  position: absolute;
+  height: 2.2933rem;
+  width: 100%;
+  bottom: 0.7rem;
+}

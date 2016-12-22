@@ -1,0 +1,242 @@
+/*CSS重置*/
+body,
+ul,
+ol,
+li,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fildset,
+table,
+td,
+img,
+div,
+dl,
+dt,
+dd,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+img {
+  border: none;
+}
+ul,
+ol {
+  list-style: none;
+}
+input,
+select,
+textarea {
+  outline: none;
+}
+textarea {
+  resize: none;
+}
+a {
+  text-decoration: none;
+}
+/*清浮动*/
+.clearfix:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.clearfix {
+  zoom: 1;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+#view_game .topBar {
+  position: absolute;
+  top: 1.1467rem;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 0.2667rem;
+  height: 0.76rem;
+}
+#view_game .topBar .score,
+#view_game .topBar .time {
+  width: 2.5333rem;
+  height: 0.76rem;
+  text-indent: 0.89rem;
+  line-height: 0.76rem;
+}
+#view_game .topBar .score {
+  background: url("../img/game/score.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .topBar .time {
+  background: url("../img/game/time.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .countTime {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+#view_game .countTime .cutTime {
+  background: url("../img/game/cutTimeBackground.png") left center no-repeat;
+  background-size: contain;
+  height: 6.227rem;
+  width: 7.373rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+#view_game .countTime .cutTime #num {
+  height: 1.35rem;
+  width: 1.04rem;
+  margin: 3.2rem 3rem;
+}
+#view_game .countTime .cutTime .num_1 {
+  background: url("../img/game/1.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .countTime .cutTime .num_2 {
+  background: url("../img/game/2.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game .countTime .cutTime .num_3 {
+  background: url("../img/game/3.png") left center no-repeat;
+  background-size: contain;
+}
+#view_game #jumpHint {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#view_game #jumpHint .hintArrow {
+  background: url("../img/game/arrow.png") left center no-repeat;
+  width: 0.95rem;
+  height: 2rem;
+  background-size: contain;
+  margin: 50% auto 0;
+}
+.popContainer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: none;
+}
+.popContainer .red {
+  color: #fb0c2c;
+}
+#gamePopContainer .successOrFail {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+#gamePopContainer .successOrFail .close {
+  height: 2.2933rem;
+  width: 100%;
+  position: absolute;
+  bottom: -0.5rem;
+}
+#gamePopContainer .successOrFail .text {
+  margin-top: 3.7333rem;
+  font-size: 0.4267rem;
+  text-align: center;
+  font-weight: bold;
+  line-height: 0.8rem;
+}
+#gamePopContainer .successPop {
+  background: url("../img/game/success_03.png") left center no-repeat;
+  height: 15.2267rem;
+  width: 8.62rem;
+  background-size: contain;
+}
+#gamePopContainer .successPop .couponBags {
+  position: absolute;
+  left: 0;
+  bottom: 1.7rem;
+  display: -webkit-box;
+  -webkit-box-pack: center;
+  width: 100%;
+}
+#gamePopContainer .successPop .couponBags .couponBag {
+  height: 3.2rem;
+  width: 33%;
+}
+#gamePopContainer .failPop {
+  background: url("../img/game/fail_03.png") left center no-repeat;
+  height: 15.2rem;
+  width: 8.64rem;
+  background-size: contain;
+}
+#gamePopContainer .failPop .buttonsArea {
+  position: absolute;
+  left: 0;
+  bottom: 2.62rem;
+  display: -webkit-box;
+  -webkit-box-pack: center;
+  width: 100%;
+}
+#gamePopContainer .failPop .buttonsArea a {
+  height: 0.9333rem;
+  width: 50%;
+  display: block;
+}
+#resultPopContainer .resultPop {
+  background: url("../img/game/result.png") left center no-repeat;
+  height: 6.3867rem;
+  width: 6.6rem;
+  background-size: contain;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+#resultPopContainer .resultPop .share {
+  position: absolute;
+  bottom: 0.56rem;
+  left: 1.6rem;
+  width: 3.24rem;
+  height: 0.9333rem;
+}
+#resultPopContainer .resultPop .close {
+  position: absolute;
+  height: 1.2rem;
+  width: 1.2rem;
+  top: 1.7rem;
+  right: -0.3rem;
+}
+#resultPopContainer .resultPop .text {
+  margin-top: 2.7733rem;
+}
+#resultPopContainer .resultPop .text p {
+  font-size: 0.4267rem;
+  text-align: center;
+  font-weight: bold;
+  line-height: 0.8rem;
+}
+#resultPopContainer .noCouponPop .text .noCouponHint {
+  font-size: 0.4rem;
+}
