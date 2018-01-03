@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>kupao</title>
+    <link href="css/newYearGame.css" rel="stylesheet">
+</head>
+<body>
+<div id="view_game">
+    <div id="score-head" class="topBar">
+        <div id="score" class="score fr">0</div>
+        <div id="time" class="time">0s</div>
+    </div>
+    <div id="countTime" class="countTime">
+        <div class="cutTime">
+            <div class="num_3" id="num"></div>
+        </div>
+    </div>
+    <div id="jumpHint">
+        <div class="hintArrow"></div>
+    </div>
+    <canvas id="canvas"></canvas>
+</div>
+<div id="gamePopContainer" class="popContainer">
+    <div class="successPop successOrFail">
+        <p class="text">本次顺利跨越<span class="num red">10</span>个障碍，积分<span class="score red">100</span>分</p>
+        <ul class="couponBags">
+            <li class="couponBag"></li>
+            <li class="couponBag"></li>
+            <li class="couponBag"></li>
+        </ul>
+        <div class="close"></div>
+    </div>
+    <div class="failPop successOrFail">
+        <div class="text">
+            <p >本次积分<span class="score red">10</span>分</p>
+            <p >积分达到<span class="red">50</span>分才可参与抽奖</p>
+        </div>
+        <div class="buttonsArea">
+            <a class="share" href=""></a>
+            <a class="playAgain" href=""></a>
+        </div>
+        <div class="close"></div>
+    </div>
+</div>
+<div id="resultPopContainer" class="popContainer">
+        <div class="getCouponPop resultPop">
+        <div class="text">
+            <p>您已经获得<span class="couponMoneyNum red">3</span>元满减券<span class="red">1</span>张</p>
+            <p>详情查询<a href="" class="red">"我的抵用券"</a></p>
+        </div>
+        <a href="" class="share"></a>
+        <div class="close"></div>
+    </div>
+    <div class="noCouponPop resultPop">
+        <div class="text">
+            <p>很遗憾，未中奖</p>
+            <p class="red noCouponHint">分享给好友可增加中奖几率哦</p>
+        </div>
+        <a class="share"></a>
+        <div class="close"></div>
+    </div>
+</div>
+
+<script src="js/flexible.js"></script>
+<script src="js/zepto.min.js"></script>
+<script src="js/paoku.js"></script>
+</body>
+</html>

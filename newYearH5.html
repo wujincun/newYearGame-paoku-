@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="css/newYearH5.css" rel="stylesheet">
+</head>
+<body>
+<div class="newYearWrap">
+    <div class="part part1">
+        <div class="calender">
+            <div class="old">
+                <span class="cTop"></span>
+                <span class="cBottom"></span>
+            </div>
+            <div class="new">
+                <span class="cTop"></span>
+                <span class="cBottom"></span>
+            </div>
+        </div>
+        <div class="newYearTitle">
+            <img src="img/h5/happyTitle_03.png">
+        </div>
+    </div>
+    <div class="part part2">
+        <div class="rule"></div>
+        <a href="newYearGame.html" class="toGame">
+            <div class="toGameText"></div>
+            <div class="toGameChild"></div>
+        </a>
+    </div>
+    <div class="part part3"></div>
+    <div class="part part4">
+        <a class="phone theme">
+            <img src="img/h5/phone_03.png">
+        </a>
+        <div class="rightWrap clearfix">
+            <a class="ktv theme fr">
+                <img src="img/h5/ktv_03.png">
+            </a>
+        </div>
+        <a class="holiday theme">
+            <img src="img/h5/holiday_03.png">
+        </a>
+    </div>
+    <div class="part part5"></div>
+    <div class="part part6 ">
+        <a class="food theme">
+            <img src="img/h5/food_03.png">
+        </a>
+        <div class="rightWrap clearfix">
+            <a class="health theme fr">
+                <img src="img/h5/health_03.png">
+            </a>
+        </div>
+        <a class="beauty theme">
+            <img src="img/h5/beauty_03.png">
+        </a>
+    </div>
+    <div class="part part7"></div>
+</div>
+<div class="ruleWrap">
+    <div class="ruleArea"></div>
+    <div class="close"></div>
+</div>
+<script src="js/flexible.js"></script>
+<script src="js/zepto.min.js"></script>
+<script>
+    var newYearGame = {
+        init:function () {
+            $('.toGameText').addClass('active');
+            $('.newYearTitle img').addClass('active');
+            this.bind();
+        },
+
+        bind:function () {
+            var $rule = $('.rule');
+            var $themes = $('.theme');
+            var $ruleWrap = $('.ruleWrap');
+            var windowH = $(window).height();
+            $(window).on('scroll',function () {
+                var scrollTop = $(window).scrollTop();
+                $themes.each(function (key,value) {
+                    var themeTop = $(value).offset().top;
+                    if(themeTop >= scrollTop && themeTop <= scrollTop + windowH){
+                        $(value).addClass('active')
+                    }else{
+                        $(value).removeClass('active')
+                    }
+
+                });
+            });
+            $rule.on('touchstart',function () {
+                $ruleWrap.show()
+            });
+            $ruleWrap.on('touchstart',function () {
+                $ruleWrap.hide()
+            })
+
+        }
+    };
+    newYearGame.init()
+</script>
+</body>
+</html>
